@@ -4,7 +4,7 @@
 define('DB_HOST', 'localhost'); // wenn nicht die Standardkonfig von Mamp bei den Ports: 127.0.0.1:8889
 define('DB_USER', 'root');
 define('DB_PW', 'root');
-define('DB_NAME', 'FIT4U');
+define('DB_NAME', 'postbox');
 
 // zeigt das Verzeichnis an, in dem die Datei liegt. Gibt den vollständigen Pfad an.
 // echo __FILE__;
