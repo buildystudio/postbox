@@ -1,5 +1,4 @@
 
-
 # 📦 PostBox: Legacy-to-Modern PHP Case Study
 
 ![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)
@@ -32,7 +31,7 @@ Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt f
 
 ## 🗺️ Refactoring Roadmap (Episodenguide)
 
-Der Umbau wird dokumentiert und auf [Medium/Hashnode] sowie LinkedIn begleitet. Für jede Episode wird es einen eigenen Pull Request geben, um den "Vorher-Nachher"-Vergleich im Code transparent nachvollziehen zu können.
+Der Umbau wird dokumentiert und auf LinkedIn begleitet. Für jede Episode wird es einen eigenen Pull Request geben, um den "Vorher-Nachher"-Vergleich im Code transparent nachvollziehen zu können.
 
 - [ ] **Episode 1:** Der Befreiungsschlag – Composer, PSR-4 & das Ende von `require_once`
 - [ ] **Episode 2:** Tod dem Singleton – Dependency Injection für die Datenbank
@@ -49,31 +48,28 @@ Wer sich den ursprünglichen Code ansehen oder lokal ausführen möchte:
 
 1. Repository klonen:
    ```bash
-   git clone [https://github.com/DEIN_USERNAME/postbox.git](https://github.com/DEIN_USERNAME/postbox.git)
-
+   git clone [https://github.com/buildystudio/postbox.git](https://github.com/buildystudio/postbox.git)
 ```
 
 2. Datenbank einrichten:
-* Erstelle eine lokale MySQL-Datenbank namens `FIT4U` (oder passe den Namen an).
+* Erstelle eine lokale MySQL-Datenbank namens `postbox`.
 * *Hinweis: Ein SQL-Dump für die Tabellenstruktur (`users`, `posts`) folgt.*
 
 
 3. Konfiguration anpassen:
 * Öffne `app/config/config.php` und passe `DB_HOST`, `DB_USER` und `DB_PW` an deine lokale Umgebung (z.B. MAMP/XAMPP/Docker) an.
+* Passe `DB_NAME` auf `postbox` an.
 * Passe den `URLROOT` an deinen lokalen Serverpfad an.
 
 
 
 ---
 
-## 📬 Folge der Reise
+## 📬 Folge der Reiseå
 
 Lass gerne einen ⭐ da, wenn du das Refactoring verfolgen willst.
-Die ausführlichen Architektur-Artikel zu den einzelnen Pull Requests veröffentliche ich hier:
+Die ausführlichen Architektur-Updates und Code-Diskussionen zu den einzelnen Episoden teile ich direkt hier:
 
-* 📝 **Artikel-Serie:** [Link zu deinem Medium/Hashnode Profil - Platzhalter]
-* 💼 **Updates & Diskussionen:** [Link zu deinem LinkedIn Profil - Platzhalter]
-* 🎥 **Video-Tutorials:** [Link zu deinem YouTube Kanal - Platzhalter]
+* 💼 **Updates & Diskussionen:** [Folge mir auf LinkedIn](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1)
 
 ```
-
