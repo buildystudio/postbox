@@ -1,3 +1,6 @@
+<?php 
+use App\Libraries\Session; 
+?>
 <div>
 	<?php
 

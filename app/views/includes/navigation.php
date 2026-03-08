@@ -1,3 +1,6 @@
+<?php 
+use App\Libraries\Session; 
+?>
 <header>
 	<ul>
 		<li id="logo">

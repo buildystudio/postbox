@@ -1,18 +1,14 @@
 <?php
 
-/**
-	 * Datenbank-Klasse unter Nutzung von PDO
-	 * Singleton => Entwurfsmuster
-	 * siehe Wikipedia
-	 * Methoden, die method chaining unterstützen:
-	 *   getInstance()
-   *  query()
-	 *  get()
-   *  delete()
-   *  insert()
-   *  update()
-*/
+namespace App\Libraries;
 
+use PDO;
+use PDOException;
+
+/**
+ * Datenbank-Klasse unter Nutzung von PDO
+ * Singleton => Entwurfsmuster
+ */
 class Database 
 {
 

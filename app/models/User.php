@@ -1,5 +1,9 @@
 <?php
+namespace App\Models;
 
+use App\Libraries\Model;
+use App\Libraries\Session;
+use Exception; // Wichtig für die try-catch Blöcke!
 class User extends Model
 {
 

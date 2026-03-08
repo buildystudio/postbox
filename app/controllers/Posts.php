@@ -1,5 +1,13 @@
 <?php
+namespace App\Controllers;
 
+use App\Libraries\Controller;
+use App\Libraries\Session;
+use App\Libraries\Redirect;
+use App\Libraries\Input;
+use App\Libraries\Validator;
+use App\Libraries\CSRF;
+use Exception;
 class Posts extends Controller
 {
 

@@ -1,75 +1,88 @@
 <?php
 
+namespace App\Libraries;
+
 /**
- * Kernklasse
- * zerlegt den URL-String und ruft in einem Controller eine Methode auf
+ * App Core Class (Front Controller / Router)
+ * * Diese Klasse fungiert als rudimentärer Router für das Legacy-Framework.
+ * Sie parst die eingehende URL und delegiert den Request an den entsprechenden Controller.
  * URL-Format: /controller/method/parameters
  */
-
 class Core
 {
+    // Default-Routing-Konfiguration
+    private $controller = 'Home';
+    private $method = 'index';
+    private $params = [];
 
-	// Eigenschaften
-	private $controller = 'Home';
-	private $method = 'index';
-	private $params = [];
+    public function __construct() 
+    {
+        // 1. Request-URL extrahieren und parsen
+        $url = $this->getURL();
+        
+        // 2. Controller evaluieren
+        if(isset($url[0])) {
+            // Controller-Namen formatieren (z.B. 'posts' -> 'Posts')
+            $requestedController = ucwords($url[0]);
+            
+            // Prüfen, ob der Controller existiert 
+            // Wichtig: Achte darauf, dass dein Ordner jetzt 'Controllers' heißt (PSR-4 Case Sensitivity)
+            if(file_exists('../app/Controllers/' . $requestedController . '.php')) {
+                $this->controller = $requestedController;
+                unset($url[0]);
+            }
+        }
 
-	// Methoden
-	public function __construct() {
-		// wird automatisch ausgeführt, wenn im Code das Signalwort new kommt
-		$url = $this->getURL();
-		// beinhalter das Array der URL
-		
-		// Controller prüfen
-		if(isset($url[0])) {
-			// prüft, ob Datei existiert
-			if(file_exists('../app/controllers/' . ucwords($url[0]) . '.php')) {
-				$this->controller = ucwords($url[0]); // überschreibt die Eigenschaft controller
-				unset($url[0]); // löscht den Eintrag aus dem Array
-			}
-		}
+        // 3. Controller dynamisch instanziieren (Die PSR-4 Magie)
+        // Wir bauen den Fully Qualified Class Name (FQCN) zusammen.
+        $controllerClass = '\\App\\Controllers\\' . $this->controller;
+        
+        // Composer übernimmt ab hier das Autoloading. Kein manuelles require_once mehr nötig!
+        $this->controller = new $controllerClass();
 
-		// bezieht angeforderten Controller ein. Wird keiner angegeben, wird der oben definierte Default-Wert genutzt
-		require_once "../app/controllers/{$this->controller}.php";
-		$this->controller = new $this->controller; // macht ein Objekt aus dem String, wegen new wird der constructor ausgeführt
+        // 4. Methode auf dem Controller evaluieren
+        if(isset($url[1])) {
+            if(method_exists($this->controller, $url[1])) {
+                $this->method = $url[1];
+                unset($url[1]);
+            }
+        }
 
-		// Methode prüfen
-		if(isset($url[1])) {
-			if(method_exists($this->controller, $url[1])) {
-				$this->method = $url[1];
-				unset($url[1]);
-			}
-		}
+        // 5. Parameter extrahieren
+        if(isset($url[2])) {
+            // Array re-indexieren, da Controller und Methode mit unset() entfernt wurden
+            $this->params = array_values($url);  
+        }
 
-		// Parameter prüfen
-		if(isset($url[2])) {
-			$this->params = array_values($url); // setzt Index neu, deshalb müssen die Einträge von vorher gelöscht werden	
-		}
+        // 6. Methode aufrufen und Parameter übergeben
+        // Modernes PHP 8+ Feature: Argument Unpacking (Spread Operator) statt call_user_func_array
+        $this->controller->{$this->method}(...$this->params);
+    }
+/**
+     * Extrahiert die URL direkt aus dem Server-Request (2026 Standard)
+     * Keine .htaccess Hacks mit $_GET['url'] mehr nötig!
+     **/
+    private function getURL() 
+    {
+        $url = [];
 
-		// Methode in einem Controller aufrufen, dabei Parameter übergeben
-		call_user_func_array([$this->controller, $this->method], $this->params);
+        // Wir lesen die aufgerufene Route direkt aus dem Server aus
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+        
+        // Falls GET-Parameter wie ?id=1 dranhängen, schneiden wir die für das saubere Routing ab
+        $requestUri = explode('?', $requestUri)[0];
+
+        // Schrägstriche vorne und hinten sauber entfernen
+        $path = trim($requestUri, '/');
+
+        if(!empty($path)) {
+            // Security: Nur valide URL-Zeichen zulassen
+            $path = filter_var($path, FILTER_SANITIZE_URL);
+            
+            // URL in verwertbare Segmente zerlegen
+            $url = explode('/', $path); 
+        }
+
+        return $url;
+    }
 	}
-
-	private function getURL() {
-		// URL abgreifen und aufbereiten, indem man in zerlegt und in einem Array abspeichert
-		
-		// leeres Array als Rüchgabevariable anlegen
-		
-		$url = [];
-
-		// wenn es in der superglobalen $_GET einen Eintrag url gibt, wird etwas ausgeführt
-		if(isset($_GET['url'])) {
-			// Slash am hinteren Ende entfernen, alles zu Kleinbuchstaben
-			$url = rtrim(strtolower($_GET['url']), '');
-
-			// String filtern, nur erlaubte URL-Zeichen
-			$url = filter_var($url, FILTER_SANITIZE_URL);
-
-			// in ein Array zerlegen
-			$url = explode('/', $url); // der / ist das Zeichen, an dem zerlegt werden soll
-		}
-
-		// gibt Wert zurück an den Funktionsaufruf oben
-		return $url;
-	}
-}

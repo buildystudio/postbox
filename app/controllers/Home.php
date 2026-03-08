@@ -1,16 +1,17 @@
 <?php
 
-class Home extends Controller // macht Home zu Kindklasse von Controller
+namespace App\Controllers;
+
+use App\Libraries\Controller;
+
+class Home extends Controller // Jetzt weiß PHP genau, welcher Controller gemeint ist!
 {
-	
-	public function index()
-	{
+    public function index()
+    {
+        $data = [
+            'title' => 'Welcome',
+        ];
 
-
-		$data = [
-			'title' => 'Welcome',
-		];
-
-		$this->view('home/index', $data);
-	}
+        $this->view('home/index', $data);
+    }
 }

@@ -1,5 +1,5 @@
 <?php
-
+namespace App\Libraries;
 class Input 
 {
 	// prüfen, ob $_GET oder $_POST Werte beinhalten

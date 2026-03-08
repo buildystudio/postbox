@@ -1,5 +1,7 @@
 <?php
+namespace App\Libraries;
 
+use App\Traits\CheckInputAndCsrf; // Hier sagen wir PHP, wo der Trait wohnt
 /**
  * Basis-Controller (Eltern-Klasse)
  * Lädt Models und Views
