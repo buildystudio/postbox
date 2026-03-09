@@ -2,26 +2,33 @@
 namespace App\Controllers;
 
 use App\Libraries\Controller;
+use App\Libraries\Database; // WICHTIG: Die neue Abhängigkeit importieren!
 use App\Libraries\Session;
 use App\Libraries\Redirect;
 use App\Libraries\Input;
 use App\Libraries\Validator;
 use App\Libraries\CSRF;
 use Exception;
+
 class Posts extends Controller
 {
+    private $post;
 
-	private $post;
+    /**
+     * NACHHER: Child-Controller reicht Abhängigkeit weiter
+     */
+    public function __construct(Database $db)
+    {
+        // 1. CONSTRUCTOR INJECTION: Wir fangen die DB auf und geben sie 
+        // sofort an den Base-Controller (die Elternklasse) weiter!
+        parent::__construct($db);
 
-	// wird als erstes ausgeführt, wenn Posts instanziiert wird
-	public function __construct()
-	{
-		// wenn Nutzer nicht angemeldet ist, wird er aufs Login weitergeleitet
-		if(!Session::has('user')) Redirect::to('/users/login');
+        // 2. Deine bestehende Logik bleibt völlig unberührt
+        if(!Session::has('user')) Redirect::to('/users/login');
 
-		$this->post = $this->model('Post');
-	}
-
+        $this->post = $this->model('Post');
+    }
+	
 	// Startseite mit allen Posts
 	public function index()
 	{

@@ -32,23 +32,24 @@ class User extends Model
 				 	]; // erwartete Felder, es können keine weiteren Felder von Hackern hinzugefügt werden
 
 
-	public function __construct($user = null)
-	{
+	/**
+     * NACHHER: Child-Model reicht die DB sauber nach oben
+     */
+    public function __construct(Database $db, $user = null)
+    {
+        // CONSTRUCTOR INJECTION: Das Model nimmt die von außen erzeugte DB 
+        // entgegen und reicht sie sofort an das Basis-Model weiter!
+        parent::__construct($db);
 
-		// ruft den contructor der Elternklasse auf, da dies nicht automatisch passiert
-		parent::__construct();
-
-		// prüft, ob ein User angemeldet ist
-		if(!$user) {
-			if(Session::has($this->sessionKey)) {
-				$user = Session::get($this->sessionKey); // holt den Eintrag aus der Session und speichert sie in $user 
-
-				if(!$this->find($user)) $this->logout(); // findet man den key (und damit den Nutzer) nicht auf der Datenbank, wird logout() ausgeführt und der key wird aus der Session entfernt
-			}
-		}
-
-		else $this->find($user);
-	}
+        // Deine restliche Login- und Session-Logik bleibt absolut unverändert
+        if(!$user) {
+            if(Session::has($this->sessionKey)) {
+                $user = Session::get($this->sessionKey); 
+                if(!$this->find($user)) $this->logout(); 
+            }
+        }
+        else $this->find($user);
+    }
 
 	public function find($identifier = null)
 	{

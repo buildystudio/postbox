@@ -1,17 +1,17 @@
 <?php
 namespace App\Libraries;
+
 class Model 
 {
+    // DB Instanz
+    protected $db;
 
-	// DB Instanz
-	
-	protected $db;
-
-	public function __construct()
-	{
-
-		// DB Instanz laden
-		$this->db = Database::getInstance();
-		
-	}
+    /**
+     * NACHHER: Dependency Injection (Constructor Injection)
+     */
+    public function __construct(Database $db)
+    {
+        // Das Model sagt jetzt ganz klar per Type-Hinting: "Ich brauche eine Database-Instanz, um zu funktionieren. Bitte gib sie mir von außen durch die Vordertür!"
+        $this->db = $db;
+    }
 }

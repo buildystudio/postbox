@@ -33,12 +33,19 @@ class Core
             }
         }
 
-        // 3. Controller dynamisch instanziieren (Die PSR-4 Magie)
-        // Wir bauen den Fully Qualified Class Name (FQCN) zusammen.
-        $controllerClass = '\\App\\Controllers\\' . $this->controller;
-        
-        // Composer übernimmt ab hier das Autoloading. Kein manuelles require_once mehr nötig!
-        $this->controller = new $controllerClass();
+   /**
+ * NACHHER: Die Composition Root (Der Geburtsort der Abhängigkeiten)
+ */
+// 3. Controller dynamisch instanziieren (Die PSR-4 Magie)
+// Wir bauen den Fully Qualified Class Name (FQCN) zusammen.
+$controllerClass = '\\App\\Controllers\\' . $this->controller;
+
+// 1. Wir erschaffen die Datenbankverbindung EIN einziges Mal für den gesamten Request!
+$db = new \App\Libraries\Database();
+
+// 2. Wir übergeben (injizieren) die Datenbank durch die Vordertür an den Controller!
+// Composer lädt die Klasse, und wir füttern den Konstruktor direkt mit der Abhängigkeit.
+$this->controller = new $controllerClass($db);
 
         // 4. Methode auf dem Controller evaluieren
         if(isset($url[1])) {
