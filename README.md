@@ -8,8 +8,6 @@ Willkommen bei **PostBox** – einem Full-OOP PHP Content Management System. Urs
 
 ## 🎯 Das Projekt-Ziel: Von 2019 zu 2026
 
-
-
 Dieses Projekt ist eine Zeitkapsel. Es zeigt exakt, wie man MVC-Frameworks "from scratch" gebaut hat, bevor sich moderne Standards flächendeckend durchgesetzt haben. Keine Packages, kein Composer, alles handgeschrieben.
 
 Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt für Schritt auf das Niveau moderner Enterprise-Architekturen zu heben. Wir implementieren Standards, wie man sie heute von führenden Open-Source-Maintainern und modernen Frameworks (wie Laravel oder Symfony) kennt.
@@ -34,13 +32,14 @@ Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt f
 
 Der Umbau wird dokumentiert und auf LinkedIn/Medium begleitet. Für jede Episode gibt es einen eigenen Pull Request, um den "Vorher-Nachher"-Vergleich im Code transparent nachvollziehen zu können.
 
-- [x] **Episode 1:** Der Befreiungsschlag – Composer, PSR-4 & das Ende von `require_once`
-  * *Meilensteine:* Etablierung von PSR-4 inkl. strikter Case Sensitivity. Ablösung von `.htaccess`-Abhängigkeiten durch direktes `REQUEST_URI`-Parsing. Einführung von Laravel-style Facades (`class_alias`), um die View-Schicht ohne massive Refactorings an das neue Namespace-Backend anzubinden. Austausch veralteter Syntax durch Argument Unpacking (`...$params`).
-- [ ] **Episode 2:** Tod dem Singleton – Dependency Injection für die Datenbank
-- [ ] **Episode 3:** Bye Bye `explode('/')` – Modernes Routing mit PHP Attributes
-- [ ] **Episode 4:** Typsicherheit pur – DTOs, Strict Types & Property Promotion
-- [ ] **Episode 5:** Security Shift – Escaping on Output, not Input
-- [ ] **Episode 6:** Match Expressions statt `switch`-Monster – Der neue Validator
+- [x] **Episode 1: Der Befreiungsschlag – Composer, PSR-4 & das Ende von `require_once`**
+  *Meilensteine:* Etablierung von PSR-4 inkl. strikter Case Sensitivity. Ablösung von `.htaccess`-Abhängigkeiten durch direktes `REQUEST_URI`-Parsing. Einführung von Laravel-style Facades (`class_alias`). Austausch veralteter Syntax durch Argument Unpacking (`...$params`).
+- [x] **Episode 2: Tod dem Singleton – Dependency Injection für die Datenbank**
+  *Meilensteine:* Auflösung des globalen States (`Database::getInstance()`). Einführung von Constructor Injection. Aufbau einer Composition Root im Front-Controller zum zentralen Management der Abhängigkeiten.
+- [ ] **Episode 3: Das Ende der if/else-Blöcke – Deklaratives Routing mit PHP Attributes**
+- [ ] **Episode 4: Typsicherheit pur – DTOs, Strict Types & Property Promotion**
+- [ ] **Episode 5: Security Shift – Escaping on Output, not Input**
+- [ ] **Episode 6: Match Expressions statt `switch`-Monster – Der neue Validator**
 
 ---
 
@@ -56,22 +55,18 @@ Dependencies installieren:
 Bash
 composer install
 Datenbank einrichten:
-
 Erstelle eine lokale MySQL-Datenbank namens FIT4U (oder ändere den Namen in der Config).
-
 Hinweis: Ein SQL-Dump für die Tabellenstruktur (users, posts) folgt.
 
 Konfiguration anpassen:
-
 Öffne app/config/config.php und passe DB_HOST, DB_USER und DB_PW an deine lokale Umgebung an.
 
-Starte den internen PHP-Server im Verzeichnis public: php -S localhost:8888
+Starte den internen PHP-Server im Verzeichnis public:
 
+Bash
+php -S localhost:8888
 📬 Folge der Reise
 Lass gerne einen ⭐ da, wenn du das Refactoring verfolgen willst.
 Die ausführlichen Architektur-Updates und Code-Diskussionen zu den einzelnen Episoden teile ich direkt hier:
 
 💼 Updates & Diskussionen: Folge mir auf LinkedIn
-
-
-***
