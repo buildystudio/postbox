@@ -34,7 +34,7 @@ Der Umbau wird dokumentiert und auf LinkedIn/Medium begleitet. Für jede Episode
 
 - [x] **Episode 1: Der Befreiungsschlag – Composer, PSR-4 & das Ende von `require_once`**
   *Meilensteine:* Etablierung von PSR-4 inkl. strikter Case Sensitivity. Ablösung von `.htaccess`-Abhängigkeiten durch direktes `REQUEST_URI`-Parsing. Einführung von Laravel-style Facades (`class_alias`). Austausch veralteter Syntax durch Argument Unpacking (`...$params`).
-- [x] **Episode 2: Tod dem Singleton – Dependency Injection für die Datenbank**
+- [ ] **Episode 2: Tod dem Singleton – Dependency Injection für die Datenbank**
   *Meilensteine:* Auflösung des globalen States (`Database::getInstance()`). Einführung von Constructor Injection. Aufbau einer Composition Root im Front-Controller zum zentralen Management der Abhängigkeiten.
 - [ ] **Episode 3: Das Ende der if/else-Blöcke – Deklaratives Routing mit PHP Attributes**
 - [ ] **Episode 4: Typsicherheit pur – DTOs, Strict Types & Property Promotion**
