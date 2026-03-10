@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
+use App\Attributes\Route;
 use App\Libraries\Controller;
 use App\Libraries\Session;
 use App\Libraries\Redirect;
@@ -14,6 +14,7 @@ class Users extends Controller
 {
 
 	// Registrierung
+	#[Route('/users/register', methods: ['GET', 'POST'])]
 	public function register()
 	{
 
@@ -30,7 +31,7 @@ class Users extends Controller
 
 			// Daten validieren
 			// Instanz des Validators aufrufen
-			$validation = new Validator;
+			$validation = new Validator($this->db);
 			// Daten sind schon getrimmt und mit htmlentities gesäubert
 			// Validierung mit den Regeln für die einzelnen Felder
 			$validation->check($user->registerFields, [
@@ -93,6 +94,7 @@ class Users extends Controller
 	}
 
 	// Login Methode
+    #[Route('/users/login', methods: ['GET', 'POST'])]
 	public function login() 
 	{
 		if($this->checkInputAndCsrf()) { // ist etwas im Formular enthalten und den Inhalt des Feldes zum Schutz vor CSRF
@@ -103,7 +105,7 @@ class Users extends Controller
 			}
 
 			// Daten validieren
-			$validation = new Validator;
+			$validation = new Validator($this->db);
 			$validation->check($user->loginFields, [
 					'email' => [
 							'name' => 'Email',
@@ -128,12 +130,13 @@ class Users extends Controller
 	}
 
 	// Logout Methode
+    #[Route('/users/logout', methods: ['GET'])]
 	public function logout() 
 	{
 		$this->model('User')->logout();; // Instanz User Model
 		Redirect::to(); // Weiterleitung auf Startseite
 	}
-
+	#[Route('/users/profile', methods: ['GET', 'POST'])]
 	public function profile()
 	{
 		if(!Session::has('user')) Redirect::to(); // wenn kein Nutzer angemeldet ist, wird er auf die Startseite umgeleitet
@@ -147,7 +150,7 @@ class Users extends Controller
 			}
 
 			// Validierung der Daten
-			$validation = new Validator;
+			$validation = new Validator($this->db);
 			$validation->check($user->profileFields, [
 					'first_name' => [
 							'name' => 'First name',
@@ -181,7 +184,7 @@ class Users extends Controller
 
 		else $this->view('users/profile', ['user' => $user->userData]);
 	}
-
+	#[Route('/users/password', methods: ['GET', 'POST'])]
 	public function password()
 	{
 		if(!Session::has('user')) Redirect::to();
@@ -194,7 +197,7 @@ class Users extends Controller
 				$user->passwordFields[$key] = Input::get($key);
 			}
 
-			$validation = new Validator;
+			$validation = new Validator($this->db);
 			$validation->check($user->passwordFields, [
 					'password_current' => [
 							'name' => 'Current password',

@@ -1,20 +1,20 @@
 <?php
 namespace App\Libraries;
+
+use App\Libraries\Database; // WICHTIG: Importieren!
+
 class Validator
 {
+    private $db = null;
 
-	// Datenbankzugang
-	private $db = null;
-
-	public $passed = false, // Validierung bestanden oder nicht, default ist false
-				 $errors = []; // sammelt alle Fehlermeldungen und zeigt sie im view an
-				 // später hat man ein assoziatives Array, in dem numerische Arrays (je nachdem, wie viele Fehlermeldungen es sind) enthalten sind
-	
-	// Datenbankverbindung herstellen
-	public function __construct()
-	{
-		$this->db = Database::getInstance();
-	}
+    public $passed = false,
+           $errors = [];
+    
+    // NACHHER: Die DB wird sauber von außen injiziert!
+    public function __construct(Database $db)
+    {
+        $this->db = $db;
+    }
 
 	// Funktion zur Validierung
 	public function check(array $source, array $items) // $source sind die Daten, $items sind die Prüfregeln

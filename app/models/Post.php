@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Libraries\Model;
 use App\Libraries\Session;
+use App\Libraries\Database;
 use Exception; // Wichtig für die try-catch Blöcke!
 class Post extends Model
 {

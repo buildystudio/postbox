@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers;
-
+use App\Attributes\Route;
 use App\Libraries\Controller;
 use App\Libraries\Database; // WICHTIG: Die neue Abhängigkeit importieren!
 use App\Libraries\Session;
@@ -29,15 +29,16 @@ class Posts extends Controller
         $this->post = $this->model('Post');
     }
 	
-	// Startseite mit allen Posts
+	#[Route('/posts', methods: ['GET'])]
 	public function index()
 	{
-		// Instanz des Post Models, die alle Posts abruft
-		$posts = $this->post->getPosts();
+// Instanz des Post Models, die alle Posts abruft
+         $posts = $this->post->getPosts();
 		$this->view('posts/index', $posts);
 	}
 
 	// Posts hinzufügen
+	#[Route('/posts/add', methods: ['GET', 'POST'])]
 	public function add()
 	{
 		if($this->checkInputAndCsrf()) {
@@ -46,7 +47,7 @@ class Posts extends Controller
 				}
 
 				// Validierung
-				$validation = new Validator;
+				$validation = new Validator($this->db);
 				$validation->check($this->post->postFields, [
 					'title' => [
 						'name' => 'Title',
@@ -75,6 +76,7 @@ class Posts extends Controller
 	}
 
 	// einzelnen Post anzeigen
+	#[Route('/posts/show/{id}', methods: ['GET'])]
 	public function show($id)
 	{
 		if($post = $this->post->getSinglePostBy($id)) {
@@ -90,6 +92,7 @@ class Posts extends Controller
 	}
 
 	// einen Post editieren
+	#[Route('/posts/edit/{id}', methods: ['GET', 'POST'])]
 	public function edit($id)
 	{
 		// wenn die Person, die auf Editieren klickt, der Autor ist
@@ -100,7 +103,7 @@ class Posts extends Controller
 				}
 
 				// Validierung
-				$validation = new Validator;
+				$validation = new Validator($this->db);
 				$validation->check($this->post->postFields, [
 					'title' => [
 						'name' => 'Title',
@@ -138,7 +141,7 @@ class Posts extends Controller
 			Redirect::to('/posts/show/' . $id);
 		}
 	}
-
+	#[Route('/posts/delete/{id}', methods: ['POST'])]
 	public function delete($id)
 	{
 		if($this->post->belongsToUser($id)) {

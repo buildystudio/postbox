@@ -28,15 +28,19 @@ class Controller
         Redirect::to(); 
     }
 
-    // lädt Models
+// lädt Models
     public function model(string $model, $identifier = null) 
     {
-        if(file_exists($path = "../app/models/{$model}.php")) require_once $path;
-        else die('Basis-Controller: Das ist ein unbekanntes Model');
+        // 1. Wir bauen den kompletten Namespace zusammen (z.B. \App\Models\User)
+        $modelClass = "\\App\\Models\\" . $model;
 
-        // 3. MAGIC HAPPENS HERE: Der Controller reicht die legitime DB-Verbindung 
-        // als allererstes Argument an das aufgerufene Model weiter!
-        return new $model($this->db, $identifier);
+        // 2. Wir prüfen über Composer, ob die Klasse existiert
+        if(class_exists($modelClass)) {
+            // 3. MAGIC HAPPENS HERE: Wir übergeben die DB an die korrekte Klasse
+            return new $modelClass($this->db, $identifier);
+        }
+
+        die('Basis-Controller: Das ist ein unbekanntes Model: ' . $modelClass);
     }
 
     // lädt Views
