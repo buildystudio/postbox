@@ -7,10 +7,10 @@
 <?php foreach($data as $post) : ?>
 
 <a href="<?=URLROOT?>/posts/show/<?= $post->id ?>" class="post">
-	<p class="postTitle"> <?= $post->title ?></p>
-	<p class="postSubTitle"> 
-		posted by <strong><?= "{$post->first_name} {$post->last_name}"?></strong> on <?= $post->created_at ?>
-	</p>
+    <p class="postTitle"> <?= e($post->title) ?></p>
+    <p class="postSubTitle"> 
+        posted by <strong><?= e($post->first_name) ?> <?= e($post->last_name) ?></strong> on <?= $post->created_at ?>
+    </p>
 </a>
 
 <?php endforeach; ?>
