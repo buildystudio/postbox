@@ -1,113 +1,101 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Libraries\Model;
+use App\DTOs\UserRegistrationDTO;
 use App\Libraries\Session;
-use App\Libraries\Database;
-use Exception; // Wichtig für die try-catch Blöcke!
+use Exception;
+
 class User extends Model
 {
+    private string $sessionKey = 'user';
 
-	private $sessionKey = 'user';
+    public $userData;
+    
+    // registerFields ist komplett gelöscht (wird jetzt durch DTO gelöst!)
+    // Die anderen Arrays bleiben vorerst für Episode 5+ erhalten, aber mit korrekter Syntax:
+    public array $loginFields = [
+        'email' => '',
+        'password' => '',
+    ];
+    public array $profileFields = [
+        'first_name' => '',
+        'last_name' => '',
+    ];
+    public array $passwordFields = [
+        'password_current' => '',
+        'password_new' => '',
+        'password_repeat' => '',
+    ];
 
-	public $userData,
-				 $registerFields = [
-				 		'first_name' => '',
-				 		'last_name' => '',
-				 		'email' => '',
-				 		'password' => '',
-				 		'confirm_password' => '',
-				  ],
-				  $loginFields = [
-				 		'email' => '',
-				 		'password' => '',
-				 	],
-				 	$profileFields = [
-						'first_name' => '',
-				 		'last_name' => '',
-				 	],
-				 	$passwordFields = [
-				 		'password_current' => '',
-				 		'password_new' => '',
-				 		'password_repeat' => '',
-				 	]; // erwartete Felder, es können keine weiteren Felder von Hackern hinzugefügt werden
-
-
-	/**
-     * NACHHER: Child-Model reicht die DB sauber nach oben
-     */
-    public function __construct(Database $db, $user = null)
+    public function __construct($user = null)
     {
-        // CONSTRUCTOR INJECTION: Das Model nimmt die von außen erzeugte DB 
-        // entgegen und reicht sie sofort an das Basis-Model weiter!
-        parent::__construct($db);
+        parent::__construct();
 
-        // Deine restliche Login- und Session-Logik bleibt absolut unverändert
         if(!$user) {
             if(Session::has($this->sessionKey)) {
-                $user = Session::get($this->sessionKey); 
+                $user = Session::get($this->sessionKey);
                 if(!$this->find($user)) $this->logout(); 
             }
+        } else {
+            $this->find($user);
         }
-        else $this->find($user);
     }
 
-	public function find($identifier = null)
-	{
+    public function find($identifier = null)
+    {
+        if($identifier) {
+            $field = is_numeric($identifier) ? 'id' : 'email';
+            $data = $this->db->get('users', [$field, '=', $identifier]);
 
-		if($identifier) {
-			// prüft ob es numerisch ist. wenn ja, ist es im Feld id, wenn nicht ist es im Feld mail
-			$field = is_numeric($identifier) ? 'id' : 'email'; // PHP Funktion
+            if($data->count) {
+                $this->userData = $data->first(); 
+                return true;
+            }
+        }
+        return false;
+    }
 
-			// DB auslesen
-			$data = $this->db->get('users', [$field, '=', $identifier]);
+    // 2026 Enterprise Way: Typsicheres DTO statt Array
+    public function create(UserRegistrationDTO $dto): void
+    {
+        $fields = [
+            'first_name' => $dto->firstName,
+            'last_name'  => $dto->lastName,
+            'email'      => $dto->email,
+            'password'   => password_hash($dto->password, PASSWORD_DEFAULT) 
+        ];
 
+        if(!$this->db->insert('users', $fields)) {
+            throw new Exception('User was not stored in db!');
+        }
+    }
 
-			if($data->count) {
-				// Benutzerdaten in der Instanz speichern
-				$this->userData = $data->first(); //  nimmt das erste Ergebnis
-				return true;
-			}
-		}
+    public function update(array $fields = [], $id = null)
+    {
+        if(!$id && Session::has($this->sessionKey)) $id = $this->userData->id;
 
-		// es liegt kein $identifier vor
-		return false;
-	}
+        if(!$this->db->update('users', $id, $fields)) {
+            throw new Exception('Update did not work');
+        }
+    }
 
-	// User registrieren
-	public function create(array $fields = [])
-	{
-		// wenn Daten nicht gespeichert werden können
-		if(!$this->db->insert('users', $fields)) {
-			throw new Exception('User was not stored in db!');
-		}
-	}
+    public function login(string $email = '', string $password = '') 
+    {
+        $userExists = $this->find($email); 
 
-		// Profil und Passwort ändern
-		public function update(array $fields = [], $id = null)
-	{
-		if(!$id && Session::has($this->sessionKey)) $id = $this->userData->id;
+        if($userExists && password_verify($password, $this->userData->password)) {
+            Session::put($this->sessionKey, $this->userData->id);
+            return true;
+        }
 
-		if(!$this->db->update('users', $id, $fields)) {
-			throw new Exception('Update did not work');
-		}
-	}
+        return false;
+    }
 
-		public function login(string $email = '', string $password = '') // Default sind leere Werte. 
-	{
-		$userExists = $this->find($email); // find() siehe weiter oben! zieht eine Zeile mit allen Daten zum Nutzer anhand der Mail Adresse raus und schreibt es in $userData
-
-		if($userExists && password_verify($password, $this->userData->password)) {
-			Session::put($this->sessionKey, $this->userData->id);
-			return true;
-		}
-
-		return false;
-	}
-
-		// Benutzer abmelden
-		public function logout()
-	{
-		Session::delete($this->sessionKey);
-	}
+    public function logout()
+    {
+        Session::delete($this->sessionKey);
+    }
 }

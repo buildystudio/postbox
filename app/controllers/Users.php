@@ -1,243 +1,167 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controllers;
-use App\Attributes\Route;
+
 use App\Libraries\Controller;
+use App\DTOs\UserRegistrationDTO;
+use App\Libraries\Validator;
+use App\Libraries\Input;
 use App\Libraries\Session;
 use App\Libraries\Redirect;
-use App\Libraries\Input;
-use App\Libraries\Validator;
-use App\Libraries\CSRF;
 use Exception;
 
 class Users extends Controller
 {
+    public function register()
+    {
+        if($this->checkInputAndCsrf()) {
+            $user = $this->model('User');
+            $validation = new Validator($this->db);
 
-	// Registrierung
-	#[Route('/users/register', methods: ['GET', 'POST'])]
-	public function register()
-	{
+            $rawData = [
+                'first_name' => Input::get('first_name'),
+                'last_name'  => Input::get('last_name'),
+                'email'      => Input::get('email'),
+                'password'   => Input::get('password'),
+                'confirm_password' => Input::get('confirm_password'),
+            ];
 
-		// Daten wurden übertragen
-		if($this->checkInputAndCsrf()) {
+            $validation->check($rawData, [
+                'first_name' => ['name' => 'First name', 'required' => true, 'min' => 2, 'max' => 30],
+                'last_name'  => ['name' => 'Last name', 'required' => true, 'min' => 2, 'max' => 30],
+                'email'      => ['name' => 'Email', 'required' => true, 'unique' => 'users'],
+                'password'   => ['name' => 'password', 'required' => true, 'min' => 6],
+                'confirm_password' => ['name' => 'confirmation', 'required' => true, 'matches' => 'password'],
+            ]); 
 
-			// Instanz erzeugen
-			$user = $this->model('User');
+            if($validation->passed) {
+                try {
+                    // DTO aus den validierten Daten bauen
+                    $dto = UserRegistrationDTO::fromArray($rawData);
+                    
+                    // Typsicheres DTO an das Model übergeben
+                    $user->create($dto);
 
-			// Daten aus dem Register in das Model übernehmen, weil das Model eine Datenbankverbindung hat
-			foreach($user->registerFields as $key => $value) {
-				$user->registerFields[$key] = Input::get($key);
-			}
+                    Session::flash('success', 'You registered successfully. Welcome!');
+                    $user->login($dto->email, $rawData['password']);
+                    Redirect::to();
+                }
+                catch(Exception $e) {
+                    die($e->getMessage());
+                }
+            } else {
+                $this->view('users/register', $validation->errors);
+            }
+        } else {
+            $this->view('users/register');
+        }
+    }
 
-			// Daten validieren
-			// Instanz des Validators aufrufen
-			$validation = new Validator($this->db);
-			// Daten sind schon getrimmt und mit htmlentities gesäubert
-			// Validierung mit den Regeln für die einzelnen Felder
-			$validation->check($user->registerFields, [
-					'first_name' => [
-							'name' => 'First name',
-							'required' => true,
-							'min' => 2,
-							'max' => 30
-					],
-					'last_name' => [
-							'name' => 'Last name',
-							'required' => true,
-							'min' => 2,
-							'max' => 30
-						],
-					'email' => [
-							'name' => 'Email',
-							'required' => true,
-							'unique' => 'users'
-						],
-					'password' => [
-							'name' => 'password',
-							'required' => true,
-							'min' => 6
-						],
-					'confirm_password' => [
-							'name' => 'confirmation',
-							'required' => true,
-							'matches' => 'password'
-						],
-				]); 
+    public function login() 
+    {
+        if($this->checkInputAndCsrf()) { 
+            $user = $this->model('User'); 
 
-			// wenn die Validierung erfolgreich ist, werden die Daten in der Datenbank gespeichert
-			if($validation->passed) {
-				try {
-					$user->create([
-							'first_name' => $user->registerFields['first_name'],
-							'last_name' => $user->registerFields['last_name'],
-							'email' => $user->registerFields['email'],
-							'password' => password_hash($user->registerFields['password'], PASSWORD_DEFAULT) // Verschlüsselung des Inhalts des Passwort feldes mit bcrypt
-						]);
+            foreach($user->loginFields as $key => $value) {
+                $user->loginFields[$key] = Input::get($key);
+            }
 
-					Session::flash('success', 'You registered successfully. Welcome!');
-					
-					$user->login($user->registerFields['email'], $user->registerFields['password']);
-					
-					Redirect::to(); // Leitet zur Startseite weiter
-				}
-				catch(Exception $e) {
-					die($e->getMessage()); // Programm bricht ab und es gibt eine Fehlermeldung
-				}
-			}
+            $validation = new Validator($this->db); // Fix: DB Injection war hier vergessen!
+            $validation->check($user->loginFields, [
+                'email' => ['name' => 'Email', 'required' => true],
+                'password' => ['name' => 'Password', 'required' => true],
+            ]);
 
-			else $this->view('users/register', $validation->errors);
-		}
+            if($validation->passed) {
+                $user->login($user->loginFields['email'], $user->loginFields['password']);
+                if(Session::has('user')) Redirect::to('/posts');
+                else die('Login failed!');
+            }
+            else $this->view('users/login', $validation->errors);
 
-		// keine Daten übertragen: zeige das leere Formular an
-		
-		else $this->view('users/register');
-	}
+        } else {
+            $this->view('users/login');
+        }
+    }
 
-	// Login Methode
-    #[Route('/users/login', methods: ['GET', 'POST'])]
-	public function login() 
-	{
-		if($this->checkInputAndCsrf()) { // ist etwas im Formular enthalten und den Inhalt des Feldes zum Schutz vor CSRF
-			$user = $this->model('User'); // instanziert das User Model
+    public function logout() 
+    {
+        $this->model('User')->logout();
+        Redirect::to(); 
+    }
 
-			foreach($user->loginFields as $key => $value) {
-				$user->loginFields[$key] = Input::get($key);
-			}
+    public function profile()
+    {
+        if(!Session::has('user')) Redirect::to(); 
 
-			// Daten validieren
-			$validation = new Validator($this->db);
-			$validation->check($user->loginFields, [
-					'email' => [
-							'name' => 'Email',
-							'required' => true
-					],
-					'password' => [
-							'name' => 'Password',
-							'required' => true
-					],
-			]);
+        $user = $this->model('User'); 
 
-			if($validation->passed) {
-				$user->login($user->loginFields['email'], $user->loginFields['password']);
-				if(Session::has('user')) Redirect::to('/posts');
-				else die('Login failed!');
-			}
-			else $this->view('users/login', $validation->errors);
+        if($this->checkInputAndCsrf()) {
+            foreach($user->profileFields as $key => $value) {
+                $user->profileFields[$key] = Input::get($key);
+            }
 
-		} 
-		// keine Daten übertragen 
-		else $this->view('users/login');
-	}
+            $validation = new Validator($this->db);
+            $validation->check($user->profileFields, [
+                'first_name' => ['name' => 'First name', 'required' => true, 'min' => 2, 'max' => 30],
+                'last_name'  => ['name' => 'Last name', 'required' => true, 'min' => 2, 'max' => 30],
+            ]);
 
-	// Logout Methode
-    #[Route('/users/logout', methods: ['GET'])]
-	public function logout() 
-	{
-		$this->model('User')->logout();; // Instanz User Model
-		Redirect::to(); // Weiterleitung auf Startseite
-	}
-	#[Route('/users/profile', methods: ['GET', 'POST'])]
-	public function profile()
-	{
-		if(!Session::has('user')) Redirect::to(); // wenn kein Nutzer angemeldet ist, wird er auf die Startseite umgeleitet
+            if($validation->passed) {
+                try {
+                    $user->update($user->profileFields);
+                    Session::flash('success', 'Profile updated successfully!');
+                    Redirect::to('/users/profile');
+                }
+                catch(Exception $e) {
+                    die($e->getMessage());
+                }
+            }
+            else $this->view('users/profile', array_merge($validation->errors, ['user' => $user->userData]));
+        } else {
+            $this->view('users/profile', ['user' => $user->userData]);
+        }
+    }
 
-		$user = $this->model('User'); // Instanz des User Models
+    public function password()
+    {
+        if(!Session::has('user')) Redirect::to();
 
-		if($this->checkInputAndCsrf()) {
-			// Abruf der eingegebenen Daten
-			foreach($user->profileFields as $key => $value) {
-				$user->profileFields[$key] = Input::get($key);
-			}
+        if($this->checkInputAndCsrf()) {
+            $user = $this->model('User');
 
-			// Validierung der Daten
-			$validation = new Validator($this->db);
-			$validation->check($user->profileFields, [
-					'first_name' => [
-							'name' => 'First name',
-							'required' => true,
-							'min' => 2,
-							'max' => 30,
-					],
-					'last_name' => [
-							'name' => 'Last name',
-							'required' => true,
-							'min' => 2,
-							'max' => 30,
-					],
-			]);
+            foreach($user->passwordFields as $key => $value) {
+                $user->passwordFields[$key] = Input::get($key);
+            }
 
-			// wenn die Validierung erfolgreich war
-			if($validation->passed) {
-				try {
-					$user->update($user->profileFields);
+            $validation = new Validator($this->db);
+            $validation->check($user->passwordFields, [
+                'password_current' => ['name' => 'Current password', 'required' => true],
+                'password_new'     => ['name' => 'New password', 'required' => true, 'min' => 6],
+                'password_repeat'  => ['name' => 'Repeat password', 'required' => true, 'min' => 6, 'matches' => 'password_new'],
+            ]);
 
-					Session::flash('success', 'Profile updated successfully!');
-					Redirect::to('/users/profile');
-				}
-				catch(Exception $e) {
-					die($e->getMessage());
-				}
-			}
-			// wenn die Validierung nicht erfolgreich war
-			else $this->view('users/profile', array_merge($validation->errors, ['user' => $user->userData]));
-		}
-
-		else $this->view('users/profile', ['user' => $user->userData]);
-	}
-	#[Route('/users/password', methods: ['GET', 'POST'])]
-	public function password()
-	{
-		if(!Session::has('user')) Redirect::to();
-
-		if($this->checkInputAndCsrf()) {
-
-			$user = $this->model('User');
-
-			foreach($user->passwordFields as $key => $value) {
-				$user->passwordFields[$key] = Input::get($key);
-			}
-
-			$validation = new Validator($this->db);
-			$validation->check($user->passwordFields, [
-					'password_current' => [
-							'name' => 'Current password',
-							'required' => true,
-					],
-					'password_new' => [
-							'name' => 'New password',
-							'required' => true,
-							'min' => 6,
-					],
-					'password_repeat' => [
-							'name' => 'Repeat password',
-							'required' => true,
-							'min' => 6,
-							'matches' => 'password_new',
-					],
-			]);
-
-			if($validation->passed) {
-				if(!password_verify($user->passwordFields['password_current'], $user->userData->password)) {
-					Session::flash('error', 'Your current password is wrong!');
-					Redirect::to('/users/password');
-				}
-				else {
-					try {
-						$user->update([
-							'password' => password_hash($user->passwordFields['password_new'], PASSWORD_DEFAULT),
-						]);
-						Session::flash('success', 'Password changed successfully.');
-						Redirect::to('/users/password');
-					}
-					catch(Exception $e) {
-						die($e->getMessage());
-					}	
-				}
-			}
-			else $this->view('users/password', $validation->errors);
-		}
-
-		else $this->view('users/password');
-	}
-	
+            if($validation->passed) {
+                if(!password_verify($user->passwordFields['password_current'], $user->userData->password)) {
+                    Session::flash('error', 'Your current password is wrong!');
+                    Redirect::to('/users/password');
+                } else {
+                    try {
+                        $user->update([
+                            'password' => password_hash($user->passwordFields['password_new'], PASSWORD_DEFAULT),
+                        ]);
+                        Session::flash('success', 'Password changed successfully.');
+                        Redirect::to('/users/password');
+                    }
+                    catch(Exception $e) {
+                        die($e->getMessage());
+                    }   
+                }
+            }
+            else $this->view('users/password', $validation->errors);
+        } else {
+            $this->view('users/password');
+        }
+    }
 }
