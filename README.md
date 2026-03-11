@@ -1,5 +1,9 @@
 # 📦 Warum Software neu schreiben meistens ein Fehler ist
-## (Refactoring Praxisberichte) 
+## Refactoring Praxisberichte 
+
+![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)
+![Status](https://img.shields.io/badge/Status-Refactoring_in_Progress-orange.svg)
+![Architecture](https://img.shields.io/badge/Architecture-Custom_MVC-green.svg)
 
 Willkommen bei **PostBox** – einem Full-OOP PHP Content Management System. Dieses Repository zeigt den ursprünglichen Stand eines studentischen Projekts aus dem Jahr 2019. Heute dient es als Basis für eine öffentliche Case Study zum Thema Software-Modernisierung und Refactoring.
 
