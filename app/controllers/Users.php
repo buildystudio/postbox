@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controllers;
-
+use App\Attributes\Route;
 use App\Libraries\Controller;
 use App\DTOs\UserRegistrationDTO;
 use App\Libraries\Validator;
@@ -13,6 +13,7 @@ use Exception;
 
 class Users extends Controller
 {
+	#[Route('/users/register', methods: ['GET', 'POST'])]
     public function register()
     {
         if($this->checkInputAndCsrf()) {
@@ -57,7 +58,7 @@ class Users extends Controller
             $this->view('users/register');
         }
     }
-
+	#[Route('/users/login', methods: ['GET', 'POST'])]
     public function login() 
     {
         if($this->checkInputAndCsrf()) { 
@@ -84,13 +85,14 @@ class Users extends Controller
             $this->view('users/login');
         }
     }
-
+    #[Route('/users/logout', methods: ['GET'])]
     public function logout() 
     {
         $this->model('User')->logout();
         Redirect::to(); 
     }
 
+	#[Route('/users/profile', methods: ['GET', 'POST'])]
     public function profile()
     {
         if(!Session::has('user')) Redirect::to(); 
@@ -124,6 +126,7 @@ class Users extends Controller
         }
     }
 
+	#[Route('/users/password', methods: ['GET', 'POST'])]
     public function password()
     {
         if(!Session::has('user')) Redirect::to();

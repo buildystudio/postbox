@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Models;
-
+use App\Libraries\Database;
 use App\Libraries\Model;
 use App\DTOs\UserRegistrationDTO;
 use App\Libraries\Session;
@@ -30,10 +30,13 @@ class User extends Model
         'password_repeat' => '',
     ];
 
-    public function __construct($user = null)
+  // Der 2026 Enterprise Way: DB per DI erzwingen
+    public function __construct(Database $db, $user = null)
     {
-        parent::__construct();
+        // 1. Die DB an das Basis-Model weiterreichen!
+        parent::__construct($db);
 
+        // 2. Deine alte Logik für die Session
         if(!$user) {
             if(Session::has($this->sessionKey)) {
                 $user = Session::get($this->sessionKey);
