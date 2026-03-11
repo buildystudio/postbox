@@ -1,75 +1,74 @@
 
-# 📦 PostBox: Legacy-to-Modern PHP Case Study
+# 📦 Warum Software neu schreiben meistens ein Fehler ist
 
-![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)
-![Status](https://img.shields.io/badge/Status-Refactoring_in_Progress-orange.svg)
-![Architecture](https://img.shields.io/badge/Architecture-Custom_MVC-green.svg)
+## (Refactoring Praxisberichte) 
 
-Willkommen bei **PostBox** – einem Full-OOP PHP Content Management System. Ursprünglich entwickelt 2019 als studentisches Semesterabschlussprojekt, dient dieses Repository heute als öffentliche Case Study für massives Code-Refactoring.
 
-## 🎯 Das Projekt-Ziel: Von 2019 zu 2026
+Willkommen bei **PostBox** – einem Full-OOP PHP Content Management System. Dieses Repository zeigt den ursprünglichen Stand eines studentischen Projekts aus dem Jahr 2019. Heute dient es als Basis für eine öffentliche Case Study zum Thema Software-Modernisierung und Refactoring.
 
-Dieses Projekt ist eine Zeitkapsel. Es zeigt exakt, wie man MVC-Frameworks "from scratch" gebaut hat, bevor sich moderne Standards flächendeckend durchgesetzt haben. Keine Packages, kein Composer, alles handgeschrieben.
+## 🎯 Der Status Quo: PHP im Jahr 2019
 
-Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt für Schritt auf das Niveau moderner Enterprise-Architekturen zu heben. Wir implementieren Standards, wie man sie heute von führenden Open-Source-Maintainern und modernen Frameworks kennt.
+Dieses Projekt ist eine Zeitkapsel. Es zeigt eine Architektur, die ohne moderne Paketverwaltung oder standardisiertes Autoloading auskommt.
 
-### 🔴 Der Legacy-Zustand (Branch: `main` / `legacy`)
-- Manuelles Autoloading via `require_once` und `spl_autoload_register` (Kein Composer).
-- Globale Zustände durch das Singleton-Pattern in der Datenbank-Verbindung.
-- Implizites URL-Parsing via `explode('/')` in der Core-Klasse.
-- Untypisierte Arrays für den Datentransfer zwischen Controllern und Models.
-- Hohe zyklomatische Komplexität in Validierungsklassen (verschachtelte `foreach`/`switch`-Blöcke).
+### 🔴 Der Legacy-Zustand (Branch: `main`)
 
-### 🟢 Das Ziel-Setup (Refactoring-Branches)
-- **Infrastruktur:** Vollständiges PSR-4 Autoloading via Composer.
-- **Architektur:** Dependency Injection (DI) Container statt Singletons.
-- **Routing:** Deklaratives Routing über moderne PHP Attributes.
-- **Domain Logic:** Typsicherheit durch `declare(strict_types=1)`, Readonly Classes, DTOs (Data Transfer Objects) und Constructor Property Promotion.
-- **Clean Code:** Einsatz von Enums und Match-Expressions für elegante Business-Logik.
+
+**Kein Composer:** Alle Abhängigkeiten sind fest im Projekt verbaut.
+
+**require_once-Hölle:** Klassen werden manuell über einen gigantischen Include-Block geladen.
+
+**Singleton-Pattern:** Die Datenbankverbindung wird über globale Zustände verwaltet.
+
+**Server-Abhängigkeit:** Das Routing verlässt sich auf spezifische Apache `.htaccess`-Konfigurationen.
+
+**Verschachtelte Logik:** Hohe Komplexität in Validierungsklassen durch klassische `switch`/`if`-Strukturen.
 
 ---
 
-## 🗺️ Refactoring Roadmap (Episodenguide)
+## 🗺️ Modernisierungs-Roadmap
 
-Der Umbau wird dokumentiert und auf LinkedIn begleitet. Für jede Episode wird es einen eigenen Pull Request geben, um den "Vorher-Nachher"-Vergleich im Code transparent nachvollziehen zu können.
+Ich führe diese Codebase Schritt für Schritt ins Jahr 2026. Jede Phase wird als eigene Episode dokumentiert:
 
-- [ ] **Episode 1:** Der Befreiungsschlag – Composer, PSR-4 & das Ende von `require_once`
-- [ ] **Episode 2:** Tod dem Singleton – Dependency Injection für die Datenbank
-- [ ] **Episode 3:** Bye Bye `explode('/')` – Modernes Routing mit PHP Attributes
-- [ ] **Episode 4:** Typsicherheit pur – DTOs, Strict Types & Property Promotion
-- [ ] **Episode 5:** Security Shift – Escaping on Output, not Input
-- [ ] **Episode 6:** Match Expressions statt `switch`-Monster – Der neue Validator
+
+**Episode 1:** Einführung von Composer & PSR-4 Autoloading.
+
+**Episode 2:** Refactoring der Datenbank zu Dependency Injection.
+
+**Episode 3:** Modernes Routing mit PHP Attributes.
+
+**Episode 4:** Einführung von Typsicherheit und DTOs.
+
+**Episode 5:** Security-Updates (Modern Escaping & CSRF).
+
+**Episode 6:** Optimierung der Business-Logik mit modernen PHP-Features.
 
 ---
 
-## 🚀 Installation & Lokales Setup (Legacy Version)
+## 🚀 Installation (Legacy Version)
 
-Wer sich den ursprünglichen Code ansehen oder lokal ausführen möchte:
+1. **Repository klonen:**
+```bash
+git clone https://github.com/buildystudio/postbox.git
 
-1. Repository klonen:
-   ```bash
-   git clone [https://github.com/buildystudio/postbox.git](https://github.com/buildystudio/postbox.git)
 ```
 
-2. Datenbank einrichten:
-* Erstelle eine lokale MySQL-Datenbank namens `postbox`.
-* *Hinweis: Ein SQL-Dump für die Tabellenstruktur (`users`, `posts`) folgt.*
+
+2. **Datenbank:** Erstelle eine lokale MySQL-Datenbank namens `postbox`.
+3. **Konfiguration:** Passe die Zugangsdaten in `app/config/config.php` an dein lokales Setup an.
+
+---
+
+## 📬 Begleite das Refactoring
+
+Ich teile die detaillierten Architektur-Entscheidungen und den "Vorher-Nachher"-Vergleich auf LinkedIn und Medium:
+
+* 💼 **LinkedIn:** [Dinko Djurkovic](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1) 
 
 
-3. Konfiguration anpassen:
-* Öffne `app/config/config.php` und passe `DB_HOST`, `DB_USER` und `DB_PW` an deine lokale Umgebung (z.B. MAMP/XAMPP/Docker) an.
-* Passe `DB_NAME` auf `postbox` an.
-* Passe den `URLROOT` an deinen lokalen Serverpfad an.
+* ✍️ **Case Study:** [Ausführliche Berichte auf Medium](https://www.google.com/search?q=https://medium.com/%40buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-5ba4704f8d67) 
 
 
 
 ---
 
-## 📬 Folge der Reiseå
-
-Lass gerne einen ⭐ da, wenn du das Refactoring verfolgen willst.
-Die ausführlichen Architektur-Updates und Code-Diskussionen zu den einzelnen Episoden teile ich direkt hier:
-
-* 💼 **Updates & Diskussionen:** [Folge mir auf LinkedIn](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1)
-
-```
+**Soll ich dir jetzt dabei helfen, einen SQL-Export (Dump) deiner aktuellen Tabellenstruktur zu erstellen, damit andere das Projekt direkt lokal testen können?**
