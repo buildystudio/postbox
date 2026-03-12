@@ -2,6 +2,9 @@
 declare(strict_types=1);
 
 namespace App\Models;
+use App\DTOs\UserProfileDTO;
+use App\DTOs\UserPasswordDTO;
+use App\DTOs\UserLoginDTO;
 use App\Libraries\Database;
 use App\Libraries\Model;
 use App\DTOs\UserRegistrationDTO;
@@ -13,22 +16,7 @@ class User extends Model
     private string $sessionKey = 'user';
 
     public $userData;
-    
-    // registerFields ist komplett gelöscht (wird jetzt durch DTO gelöst!)
-    // Die anderen Arrays bleiben vorerst für Episode 5+ erhalten, aber mit korrekter Syntax:
-    public array $loginFields = [
-        'email' => '',
-        'password' => '',
-    ];
-    public array $profileFields = [
-        'first_name' => '',
-        'last_name' => '',
-    ];
-    public array $passwordFields = [
-        'password_current' => '',
-        'password_new' => '',
-        'password_repeat' => '',
-    ];
+ 
 
   // Der 2026 Enterprise Way: DB per DI erzwingen
     public function __construct(Database $db, $user = null)
@@ -76,20 +64,32 @@ class User extends Model
         }
     }
 
-    public function update(array $fields = [], $id = null)
+    public function update(UserProfileDTO|UserPasswordDTO $dto, $id = null): void
     {
         if(!$id && Session::has($this->sessionKey)) $id = $this->userData->id;
+
+        // Prüfen, welches DTO übergeben wurde
+        if ($dto instanceof UserProfileDTO) {
+            $fields = [
+                'first_name' => $dto->firstName,
+                'last_name' => $dto->lastName
+            ];
+        } else {
+            $fields = [
+                'password' => password_hash($dto->passwordNew, PASSWORD_DEFAULT)
+            ];
+        }
 
         if(!$this->db->update('users', $id, $fields)) {
             throw new Exception('Update did not work');
         }
     }
 
-    public function login(string $email = '', string $password = '') 
+  public function login(UserLoginDTO $dto): bool 
     {
-        $userExists = $this->find($email); 
+        $userExists = $this->find($dto->email); 
 
-        if($userExists && password_verify($password, $this->userData->password)) {
+        if($userExists && password_verify($dto->password, $this->userData->password)) {
             Session::put($this->sessionKey, $this->userData->id);
             return true;
         }
