@@ -20,17 +20,20 @@ class Controller
 		Redirect::to(); // bringt zurück zur Startseite, wenn eine Seite nicht existiert, die man aufrufen will
 	}
 
-	// lädt Models
-	public function model(string $model, $identifier = null) 
-	{
+	// lädt Models (Episode 1: PSR-4 Autoloading)
+    public function model(string $model) 
+    {
+        // 1. Wir bauen den kompletten Namespace zusammen
+        $modelClass = "\\App\\Models\\" . $model;
 
-		//prüft, ob eine Datei existiert und speichert sie direkt in eine Variable. Bindet die Datei ein.
-		if(file_exists($path = "../app/models/{$model}.php")) require_once $path;
-		else die('Basis-Controller: Das ist ein unbekanntes Model');
+        // 2. Wir prüfen über den Composer-Autoloader, ob die Klasse existiert
+        if(class_exists($modelClass)) {
+            // 3. Model instanziieren
+            return new $modelClass();
+        }
 
-		// es wird eine Instanz erstellt aus der Datei Model.php und übergibt einen Parameter, der im constructor landet. Gibt Wert dorthin zurück, wo die Methode model aufgerufen wird
-		return new $model($identifier);
-	}
+        die('Basis-Controller: Das ist ein unbekanntes Model: ' . $modelClass);
+    }
 
 	// lädt Views
 	public function view(string $view, array $data = [])
