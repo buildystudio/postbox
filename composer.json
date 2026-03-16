@@ -1,0 +1,21 @@
+{
+    "name": "buildy.studio/post-box",
+    "description": "Legacy-to-Modern PHP Case Study",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "buildy.studio",
+            "email": "info@buildy.studio"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "app/helpers/functions.php"
+        ]
+    },
+    "require": {}
+}

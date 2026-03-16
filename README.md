@@ -1,75 +1,63 @@
-
-# 📦 PostBox: Legacy-to-Modern PHP Case Study
+# 📦 Warum Software neu schreiben meistens ein Fehler ist
+## Refactoring Praxisberichte 
 
 ![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Refactoring_in_Progress-orange.svg)
 ![Architecture](https://img.shields.io/badge/Architecture-Custom_MVC-green.svg)
 
-Willkommen bei **PostBox** – einem Full-OOP PHP Content Management System. Ursprünglich entwickelt 2019 als studentisches Semesterabschlussprojekt, dient dieses Repository heute als öffentliche Case Study für massives Code-Refactoring.
+Willkommen bei **PostBox**. In dieser Phase haben wir das veraltete URL-Parsing durch ein modernes, attribut-basiertes Routing ersetzt. Dieses Repository dient als Basis für eine öffentliche Case Study zum Thema Software-Modernisierung.
 
-## 🎯 Das Projekt-Ziel: Von 2019 zu 2026
+## 🎯 Der Status Quo: Episode 3 abgeschlossen
 
-Dieses Projekt ist eine Zeitkapsel. Es zeigt exakt, wie man MVC-Frameworks "from scratch" gebaut hat, bevor sich moderne Standards flächendeckend durchgesetzt haben. Keine Packages, kein Composer, alles handgeschrieben.
+Nach der Entkopplung der Datenbank in Episode 2 haben wir nun die **Routing-Logik** revolutioniert. Wir haben uns von unübersichtlichen `if/else`-Blöcken und manuellen `explode('/')`-Operationen verabschiedet.
 
-Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt für Schritt auf das Niveau moderner Enterprise-Architekturen zu heben. Wir implementieren Standards, wie man sie heute von führenden Open-Source-Maintainern und modernen Frameworks kennt.
+### ✅ Erreichte Meilensteine (Branch: `episode-3`)
 
-### 🔴 Der Legacy-Zustand (Branch: `main` / `legacy`)
-- Manuelles Autoloading via `require_once` und `spl_autoload_register` (Kein Composer).
-- Globale Zustände durch das Singleton-Pattern in der Datenbank-Verbindung.
-- Implizites URL-Parsing via `explode('/')` in der Core-Klasse.
-- Untypisierte Arrays für den Datentransfer zwischen Controllern und Models.
-- Hohe zyklomatische Komplexität in Validierungsklassen (verschachtelte `foreach`/`switch`-Blöcke).
-
-### 🟢 Das Ziel-Setup (Refactoring-Branches)
-- **Infrastruktur:** Vollständiges PSR-4 Autoloading via Composer.
-- **Architektur:** Dependency Injection (DI) Container statt Singletons.
-- **Routing:** Deklaratives Routing über moderne PHP Attributes.
-- **Domain Logic:** Typsicherheit durch `declare(strict_types=1)`, Readonly Classes, DTOs (Data Transfer Objects) und Constructor Property Promotion.
-- **Clean Code:** Einsatz von Enums und Match-Expressions für elegante Business-Logik.
+* **Attribute Routing:** Controller-Methoden werden nun über moderne PHP Attributes (z. B. `#[Route('/blog')]`) gesteuert.
+* **Wegfall der Apache-Abhängigkeit:** Das System ist nun vollständig serverunabhängig und benötigt keine komplexen `.htaccess`-Hacks mehr.
+* **Zentraler Router:** Einführung einer robusten Routing-Engine, die HTTP-Verben (GET, POST) und Parameter automatisch verarbeitet.
+* **Code-Sauberkeit:** Die Core-Klasse ist massiv geschrumpft, da die Logik nun deklarativ direkt an den Controller-Methoden liegt.
 
 ---
 
-## 🗺️ Refactoring Roadmap (Episodenguide)
+## 🗺️ Modernisierungs-Roadmap
 
-Der Umbau wird dokumentiert und auf LinkedIn begleitet. Für jede Episode wird es einen eigenen Pull Request geben, um den "Vorher-Nachher"-Vergleich im Code transparent nachvollziehen zu können.
-
-- [ ] **Episode 1:** Der Befreiungsschlag – Composer, PSR-4 & das Ende von `require_once`
-- [ ] **Episode 2:** Tod dem Singleton – Dependency Injection für die Datenbank
-- [ ] **Episode 3:** Bye Bye `explode('/')` – Modernes Routing mit PHP Attributes
-- [ ] **Episode 4:** Typsicherheit pur – DTOs, Strict Types & Property Promotion
-- [ ] **Episode 5:** Security Shift – Escaping on Output, not Input
-- [ ] **Episode 6:** Match Expressions statt `switch`-Monster – Der neue Validator
+* [x] **Episode 1:** Einführung von Composer & PSR-4 Autoloading.
+* [x] **Episode 2:** Refactoring der Datenbank zu Dependency Injection.
+* [x] **Episode 3:** Modernes Routing mit PHP Attributes.
+* [ ] **Episode 4:** Einführung von Typsicherheit und DTOs.
+* [ ] **Episode 5:** Security-Updates (Modern Escaping & CSRF).
+* [ ] **Episode 6:** Optimierung der Business-Logik mit modernen PHP-Features.
 
 ---
 
-## 🚀 Installation & Lokales Setup (Legacy Version)
+## 🚀 Installation (Stand Episode 3)
 
-Wer sich den ursprünglichen Code ansehen oder lokal ausführen möchte:
-
-1. Repository klonen:
+1. **Repository klonen & Branch wechseln:**
    ```bash
    git clone [https://github.com/buildystudio/postbox.git](https://github.com/buildystudio/postbox.git)
-```
-
-2. Datenbank einrichten:
-* Erstelle eine lokale MySQL-Datenbank namens `postbox`.
-* *Hinweis: Ein SQL-Dump für die Tabellenstruktur (`users`, `posts`) folgt.*
+   git checkout episode-3
 
 
-3. Konfiguration anpassen:
-* Öffne `app/config/config.php` und passe `DB_HOST`, `DB_USER` und `DB_PW` an deine lokale Umgebung (z.B. MAMP/XAMPP/Docker) an.
-* Passe `DB_NAME` auf `postbox` an.
-* Passe den `URLROOT` an deinen lokalen Serverpfad an.
+
+2. **Abhängigkeiten installieren:**
+   ```bash
+   composer install
+
+
+
+
+3. **Umgebung starten:**
+* **Mit Docker:** `docker-compose up -d`
+* **Manuell:** `php -S localhost:8000 -t public`
 
 
 
 ---
 
-## 📬 Folge der Reiseå
+## 📬 Begleite das Refactoring
 
-Lass gerne einen ⭐ da, wenn du das Refactoring verfolgen willst.
-Die ausführlichen Architektur-Updates und Code-Diskussionen zu den einzelnen Episoden teile ich direkt hier:
+Ich teile die detaillierten Architektur-Entscheidungen und den "Vorher-Nachher"-Vergleich auf LinkedIn und Medium:
 
-* 💼 **Updates & Diskussionen:** [Folge mir auf LinkedIn](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1)
-
-```
+* 💼 **LinkedIn:** [Dinko Djurkovic](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1)
+* ✍️ **Case Study:** [Ausführliche Berichte auf Medium](https://medium.com/@buildy.studio)

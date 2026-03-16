@@ -7,7 +7,7 @@
 	<div class="field">
 		<label for="password_current">Current password</label>
 		<span class="invalid-feedback">
-			<?=isset($data['password_current']) ? $data['password_current'][0] : ''?>
+			<?=isset($data['password_current']) ? e($data['password_current'][0]) : ''?>
 		</span> 
 		<input type="password" 
 			name="password_current"
@@ -18,7 +18,7 @@
 	<div class="field">
 		<label for="password_new">New password</label>
 		<span class="invalid-feedback">
-			<?=isset($data['password_new']) ? $data['password_new'][0] : ''?>
+			<?=isset($data['password_new']) ? e($data['password_new'][0]) : ''?>
 		</span> 
 		<input type="password" 
 			name="password_new"
@@ -29,7 +29,7 @@
 	<div class="field">
 		<label for="password_repeat">Repeat new password</label>
 		<span class="invalid-feedback">
-			<?=isset($data['password_repeat']) ? $data['password_repeat'][0] : ''?>
+			<?=isset($data['password_repeat']) ? e($data['password_repeat'][0]) : ''?>
 		</span> 
 		<input type="password" 
 			name="password_repeat"

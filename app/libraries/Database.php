@@ -1,22 +1,16 @@
 <?php
 
-/**
-	 * Datenbank-Klasse unter Nutzung von PDO
-	 * Singleton => Entwurfsmuster
-	 * siehe Wikipedia
-	 * Methoden, die method chaining unterstützen:
-	 *   getInstance()
-   *  query()
-	 *  get()
-   *  delete()
-   *  insert()
-   *  update()
-*/
+namespace App\Libraries;
 
+use PDO;
+use PDOException;
+
+/**
+ * Datenbank-Klasse unter Nutzung von PDO
+ * Singleton => Entwurfsmuster
+ */
 class Database 
 {
-
-	private static $instance = null; // Inhalt verändert sich durch das static nicht, macht die ganze Klasse statisch
 
 	// Zugang zur Datenbank
 	private $connect = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME,
@@ -31,7 +25,7 @@ class Database
 				 $count = 0;
 
 	// Verbindung zur Datenbank herstellen
-	private function __construct() // kann wegen private nicht mehr wie vorher instanziiert werden
+	public function __construct() // kann wegen private nicht mehr wie vorher instanziiert werden
 	{
 		try {
 			$this->pdo = new PDO($this->connect, $this->user, $this->pw); // Instanz der PDO-Klasse, die mit den mitgegebenen Parametern versucht, einen Zugang zur Datenbank herzustellen
@@ -42,12 +36,6 @@ class Database
 		}
 	}
 
-	public static function getInstance()
-	{
-		// self entspricht $this, dieses kann aber bei statischen Methoden nicht verwendet werden. Es wird nur instanziiert, wenn es noch keine Instanz gab. Dadurch gibt es nur einen Zugang zur Datenbank pro URL
-		if(!isset(self::$instance)) self::$instance = new self; // :: entspricht ->, hinten ist eine Instanziierung
-		return self::$instance;
-	}
 
 	 // Datenbank abfragen, Array ist optionaler Parameter
   public function query(string $sql, array $params = [])

@@ -1,65 +1,77 @@
 <?php
+declare(strict_types=1);
+namespace App\Controllers;
+use App\DTOs\PostCreateDTO;
+use App\DTOs\PostUpdateDTO;
+use App\Attributes\Route;
+use App\Libraries\Controller;
+use App\Libraries\Database; // WICHTIG: Die neue Abhängigkeit importieren!
+use App\Libraries\Session;
+use App\Libraries\Redirect;
+use App\Libraries\Input;
+use App\Libraries\Validator;
+use App\Libraries\CSRF;
+use Exception;
 
 class Posts extends Controller
 {
+   private $post;
+    private Validator $validator; // NEU: Property für den Validator
 
-	private $post;
+    // NEU: Der Router liefert uns die Database UND den Validator automatisch
+    public function __construct(Database $db, Validator $validator)
+    {
+        parent::__construct($db); 
+        $this->validator = $validator; 
 
-	// wird als erstes ausgeführt, wenn Posts instanziiert wird
-	public function __construct()
-	{
-		// wenn Nutzer nicht angemeldet ist, wird er aufs Login weitergeleitet
-		if(!Session::has('user')) Redirect::to('/users/login');
+        if(!Session::has('user')) Redirect::to('/users/login');
 
-		$this->post = $this->model('Post');
-	}
-
-	// Startseite mit allen Posts
+        $this->post = $this->model('Post');
+    }
+	
+	#[Route('/posts', methods: ['GET'])]
 	public function index()
 	{
-		// Instanz des Post Models, die alle Posts abruft
-		$posts = $this->post->getPosts();
+// Instanz des Post Models, die alle Posts abruft
+         $posts = $this->post->getPosts();
 		$this->view('posts/index', $posts);
 	}
 
 	// Posts hinzufügen
-	public function add()
-	{
-		if($this->checkInputAndCsrf()) {
-			foreach($this->post->postFields as $key => $value) {
-					$this->post->postFields[$key] = Input::get($key);
-				}
+	#[Route('/posts/add', methods: ['GET', 'POST'])]
+    public function add()
+    {
+        if($this->checkInputAndCsrf()) {
+            $rawData = [
+                'title' => Input::get('title'),
+                'body'  => Input::get('body')
+            ];
 
-				// Validierung
-				$validation = new Validator;
-				$validation->check($this->post->postFields, [
-					'title' => [
-						'name' => 'Title',
-						'required' => true,
-						'min' => 3,
-					],
-					'body' => [
-						'name' => 'Content',
-						'required' => true,
-					],
-				]);
+            $validation = $this->validator;
+            $validation->check($rawData, [
+                'title' => ['name' => 'Title', 'required' => true, 'min' => 3],
+                'body'  => ['name' => 'Content', 'required' => true],
+            ]);
 
-				if($validation->passed) {
-					try {
-						$this->post->create(array_merge(['user_id' => Session::get('user')], $this->post->postFields));
-						Session::flash('success', 'Posted successfully.');
-						Redirect::to('/posts');
-					}
-					catch(Exception $e) {
-						die($e->getMessage());
-					}
-				}
-				else $this->view('posts/add', $validation->errors);
-		}
-		else $this->view('posts/add');
-	}
+            if($validation->passed) {
+                try {
+                    $dto = new PostCreateDTO($rawData['title'], $rawData['body'], Session::get('user'));
+                    $this->post->create($dto);
+                    
+                    Session::flash('success', 'Posted successfully.');
+                    Redirect::to('/posts');
+                }
+                catch(Exception $e) {
+                    die($e->getMessage());
+                }
+            }
+            else $this->view('posts/add', $validation->errors);
+        }
+        else $this->view('posts/add');
+    }
 
 	// einzelnen Post anzeigen
+	#[Route('/posts/show/{id}', methods: ['GET'])]
 	public function show($id)
 	{
 		if($post = $this->post->getSinglePostBy($id)) {
@@ -75,55 +87,47 @@ class Posts extends Controller
 	}
 
 	// einen Post editieren
-	public function edit($id)
-	{
-		// wenn die Person, die auf Editieren klickt, der Autor ist
-		if($this->post->belongsToUser($id)) {
-			if($this->checkInputAndCsrf()) {
-				foreach($this->post->postFields as $key => $value) {
-					$this->post->postFields[$key] = Input::get($key);
-				}
+	#[Route('/posts/edit/{id}', methods: ['GET', 'POST'])]
+    public function edit($id)
+    {
+        if($this->post->belongsToUser($id)) {
+            if($this->checkInputAndCsrf()) {
+                $rawData = [
+                    'title' => Input::get('title'),
+                    'body'  => Input::get('body')
+                ];
 
-				// Validierung
-				$validation = new Validator;
-				$validation->check($this->post->postFields, [
-					'title' => [
-						'name' => 'Title',
-						'required' => true,
-						'min' => 3,
-					],
-					'body' => [
-						'name' => 'Content',
-						'required' => true,
-					],
-				]);
+                $validation = $this->validator;
+                $validation->check($rawData, [
+                    'title' => ['name' => 'Title', 'required' => true, 'min' => 3],
+                    'body'  => ['name' => 'Content', 'required' => true],
+                ]);
 
-				// Validierung wird bestanden
-				if($validation->passed) {
-					try {
-						$this->post->update($id, $this->post->postFields);
-						Session::flash('success', 'Post updated successfully.');
-						Redirect::to('/posts/show/' . $id);
-					}
-
-					catch(Exception $e) {
-						die($e->getMessage());
-					}
-				}
-				// Validierung wird nicht bestanden
-				else $this->view('posts/edit', array_merge($validation->errors, [
-					'post' => $this->post->getSinglePostBy($id),
-				]));
-			}
-			else $this->view('posts/edit', ['post' => $this->post->getSinglePostBy($id)]);
-		}
-		else  {
-			// Fehlermeldung, wenn Nutzer nicht der Autor des Posts ist
-			Session::flash('error', 'You may only edit your own posts.');
-			Redirect::to('/posts/show/' . $id);
-		}
-	}
-
+                if($validation->passed) {
+                    try {
+                        $dto = new PostUpdateDTO($rawData['title'], $rawData['body']);
+                        $this->post->update((int)$id, $dto);
+                        
+                        Session::flash('success', 'Post updated successfully.');
+                        Redirect::to('/posts/show/' . $id);
+                    }
+                    catch(Exception $e) {
+                        die($e->getMessage());
+                    }
+                }
+                else $this->view('posts/edit', array_merge($validation->errors, [
+                    'post' => $this->post->getSinglePostBy($id),
+                ]));
+            }
+            else $this->view('posts/edit', ['post' => $this->post->getSinglePostBy($id)]);
+        }
+        else  {
+            Session::flash('error', 'You may only edit your own posts.');
+            Redirect::to('/posts/show/' . $id);
+        }
+    }
+	
+	#[Route('/posts/delete/{id}', methods: ['POST'])]
 	public function delete($id)
 	{
 		if($this->post->belongsToUser($id)) {

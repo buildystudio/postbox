@@ -1,13 +1,14 @@
 <?php
-
+declare(strict_types=1);
+namespace App\Models;
+use App\DTOs\PostCreateDTO;
+use App\DTOs\PostUpdateDTO;
+use App\Libraries\Model;
+use App\Libraries\Session;
+use App\Libraries\Database;
+use Exception; // Wichtig für die try-catch Blöcke!
 class Post extends Model
 {
-
-	public $postFields = [
-		'title' => '',
-		'body' => '',
-	];
-
 	// Methode zum Anzeigen der Posts
 	public function getPosts()
 	{
@@ -33,20 +34,31 @@ class Post extends Model
 	}
 
 	// neuen Post einfügen
-	public function create(array $fields = []) 
-	{
-		if(!$this->db->insert('posts', $fields)) {
-			throw new Exception('Post was not stored in Database.');
-		}
-	}
+	public function create(PostCreateDTO $dto): void 
+    {
+        $fields = [
+            'title' => $dto->title,
+            'body' => $dto->body,
+            'user_id' => $dto->userId
+        ];
+
+        if(!$this->db->insert('posts', $fields)) {
+            throw new Exception('Post was not stored in Database.');
+        }
+    }
 
 	// Post updaten
-	public function update(int $id, array $fields = [])
-	{
-		if(!$this->db->update('posts', $id, $fields)) {
-			throw new Exception('Update did not work.');
-		}
-	}
+	public function update(int $id, PostUpdateDTO $dto): void
+    {
+        $fields = [
+            'title' => $dto->title,
+            'body' => $dto->body
+        ];
+
+        if(!$this->db->update('posts', $id, $fields)) {
+            throw new Exception('Update did not work.');
+        }
+    }
 
 	public function delete(int $id)
 	{

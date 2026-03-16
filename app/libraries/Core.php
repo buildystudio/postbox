@@ -1,75 +1,89 @@
 <?php
+declare(strict_types=1);
+namespace App\Libraries;
 
-/**
- * Kernklasse
- * zerlegt den URL-String und ruft in einem Controller eine Methode auf
- * URL-Format: /controller/method/parameters
- */
+use ReflectionClass;
+use App\Attributes\Route;
 
 class Core
 {
+    public function __construct() 
+    {
+        // 1. URL und HTTP-Methode auslesen
+        $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        // Falls das Projekt in einem Unterordner liegt (z.B. localhost:8888),
+        // stellen wir sicher, dass wir einen sauberen Pfad haben:
+        $requestUri = rtrim($requestUri, '/') ?: '/';
+        $requestMethod = $_SERVER['REQUEST_METHOD'];
 
-	// Eigenschaften
-	private $controller = 'Home';
-	private $method = 'index';
-	private $params = [];
+        // 2. Alle Controller registrieren, die wir scannen wollen
+        $controllers = [
+            \App\Controllers\Home::class,
+            \App\Controllers\Posts::class,
+            \App\Controllers\Users::class
+        ];
 
-	// Methoden
-	public function __construct() {
-		// wird automatisch ausgeführt, wenn im Code das Signalwort new kommt
-		$url = $this->getURL();
-		// beinhalter das Array der URL
-		
-		// Controller prüfen
-		if(isset($url[0])) {
-			// prüft, ob Datei existiert
-			if(file_exists('../app/controllers/' . ucwords($url[0]) . '.php')) {
-				$this->controller = ucwords($url[0]); // überschreibt die Eigenschaft controller
-				unset($url[0]); // löscht den Eintrag aus dem Array
-			}
-		}
+        // 3. Controller mit Reflection scannen
+        foreach ($controllers as $controllerClass) {
+            $reflection = new ReflectionClass($controllerClass);
 
-		// bezieht angeforderten Controller ein. Wird keiner angegeben, wird der oben definierte Default-Wert genutzt
-		require_once "../app/controllers/{$this->controller}.php";
-		$this->controller = new $this->controller; // macht ein Objekt aus dem String, wegen new wird der constructor ausgeführt
+            foreach ($reflection->getMethods() as $method) {
+                $attributes = $method->getAttributes(Route::class);
 
-		// Methode prüfen
-		if(isset($url[1])) {
-			if(method_exists($this->controller, $url[1])) {
-				$this->method = $url[1];
-				unset($url[1]);
-			}
-		}
+                foreach ($attributes as $attribute) {
+                    $route = $attribute->newInstance();
 
-		// Parameter prüfen
-		if(isset($url[2])) {
-			$this->params = array_values($url); // setzt Index neu, deshalb müssen die Einträge von vorher gelöscht werden	
-		}
+                    // Passt die HTTP-Methode? (GET/POST)
+                    if (!in_array($requestMethod, $route->methods)) {
+                        continue;
+                    }
 
-		// Methode in einem Controller aufrufen, dabei Parameter übergeben
-		call_user_func_array([$this->controller, $this->method], $this->params);
-	}
+                    // Regex bauen: Ersetzt {id} durch einen Regex-Platzhalter für Parameter
+                    $pattern = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '([a-zA-Z0-9_]+)', $route->path);
+                    $pattern = "@^" . $pattern . "$@D";
 
-	private function getURL() {
-		// URL abgreifen und aufbereiten, indem man in zerlegt und in einem Array abspeichert
-		
-		// leeres Array als Rüchgabevariable anlegen
-		
-		$url = [];
+                    // Passt die aufgerufene URL auf unsere Route?
+                    if (preg_match($pattern, $requestUri, $matches)) {
+                        array_shift($matches); // Den vollen Regex-Match entfernen, nur Parameter behalten
+                        
+                     // 2026 Enterprise Autowiring: Der Container baut den Controller inkl. aller Abhängigkeiten!
+                        $controllerInstance = $this->buildInstance($controllerClass);
+                        
+                        // Controller-Methode mit Parametern aufrufen
+                        $controllerInstance->{$method->getName()}(...$matches);
+                        return; // Request erfolgreich beendet!
+                    }
+                }
+            }
+        }
 
-		// wenn es in der superglobalen $_GET einen Eintrag url gibt, wird etwas ausgeführt
-		if(isset($_GET['url'])) {
-			// Slash am hinteren Ende entfernen, alles zu Kleinbuchstaben
-			$url = rtrim(strtolower($_GET['url']), '');
+        // Wenn keine Route gefunden wurde:
+        http_response_code(404);
+        die("404 - Route not found");
+    }
+    /**
+     * Ein rekursiver Dependency Injection Container.
+     * Erstellt Instanzen und löst deren Abhängigkeiten automatisch auf.
+     */
+    private function buildInstance(string $className)
+    {
+        $reflection = new ReflectionClass($className);
+        $constructor = $reflection->getConstructor();
 
-			// String filtern, nur erlaubte URL-Zeichen
-			$url = filter_var($url, FILTER_SANITIZE_URL);
+        // Wenn die Klasse keinen Konstruktor hat, einfach instanziieren
+        if (!$constructor) {
+            return new $className();
+        }
 
-			// in ein Array zerlegen
-			$url = explode('/', $url); // der / ist das Zeichen, an dem zerlegt werden soll
-		}
+        $dependencies = [];
+        // Alle Parameter des Konstruktors analysieren
+        foreach ($constructor->getParameters() as $parameter) {
+            $dependencyType = $parameter->getType()->getName();
+            // REKURSION: Falls die Abhängigkeit selbst Abhängigkeiten hat
+            // (z.B. Validator braucht Database), wird dies hier automatisch gelöst!
+            $dependencies[] = $this->buildInstance($dependencyType);
+        }
 
-		// gibt Wert zurück an den Funktionsaufruf oben
-		return $url;
-	}
+        return $reflection->newInstanceArgs($dependencies);
+    }
 }

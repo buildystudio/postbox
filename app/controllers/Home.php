@@ -1,16 +1,16 @@
 <?php
+declare(strict_types=1);
+namespace App\Controllers;
 
-class Home extends Controller // macht Home zu Kindklasse von Controller
+use App\Libraries\Controller;
+use App\Attributes\Route;
+
+class Home extends Controller 
 {
-	
-	public function index()
-	{
-
-
-		$data = [
-			'title' => 'Welcome',
-		];
-
-		$this->view('home/index', $data);
-	}
+    #[Route('/', methods: ['GET'])]
+    public function index()
+    {
+        $data = ['title' => 'Welcome'];
+        $this->view('home/index', $data);
+    }
 }

@@ -1,79 +1,82 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Libraries;
 
 class Validator
 {
+    public bool $passed = false;
+    public array $errors = [];
+    
+    // 2026 Standard: Constructor Property Promotion
+    public function __construct(private Database $db) {}
 
-	// Datenbankzugang
-	private $db = null;
+    public function check(array $source, array $items): void
+    {
+        foreach ($items as $item => $rules) {
+            $input = (string)($source[$item] ?? '');
+            $fieldName = $rules['name'] ?? $item;
 
-	public $passed = false, // Validierung bestanden oder nicht, default ist false
-				 $errors = []; // sammelt alle Fehlermeldungen und zeigt sie im view an
-				 // später hat man ein assoziatives Array, in dem numerische Arrays (je nachdem, wie viele Fehlermeldungen es sind) enthalten sind
-	
-	// Datenbankverbindung herstellen
-	public function __construct()
-	{
-		$this->db = Database::getInstance();
-	}
+            // 1. Guard Clause für 'required' (beendet die Prüfung für dieses Feld vorzeitig, wenn leer)
+            if (!empty($rules['required']) && empty($input)) {
+                $this->addError($item, "{$fieldName} field is required.");
+                continue; 
+            }
 
-	// Funktion zur Validierung
-	public function check(array $source, array $items) // $source sind die Daten, $items sind die Prüfregeln
-	{
-		// jedes zu prüfende Item und die zugehörige Regel wird per foreach durchlaufen
-		foreach($items as $item => $rules) {
-			// jede dieser einzuhaltenden Regeln 
-			foreach($rules as $rule => $detail) {
+            // 2. Wenn es Input gibt, jagen wir ihn durch die restlichen Regeln
+            if (!empty($input)) {
+                foreach ($rules as $rule => $ruleValue) {
+                    // Metadaten überspringen
+                    if ($rule === 'name' || $rule === 'required') {
+                        continue;
+                    }
 
-				// aktuelles Input, der geprüft wird
-				$input = $source[$item];
+                    // 3. MAGIC HAPPENS HERE: PHP 8 Match Expression!
+                    // Es gibt einen String (Fehler) zurück oder null (Erfolg)
+                    $error = match ($rule) {
+                        'min'     => $this->validateMin($input, (int)$ruleValue) ? null : "{$fieldName} must be a minimum of {$ruleValue} characters.",
+                        'max'     => $this->validateMax($input, (int)$ruleValue) ? null : "{$fieldName} must be a maximum of {$ruleValue} characters.",
+                        'matches' => $this->validateMatches($input, (string)$source[$ruleValue]) ? null : "{$fieldName} field must match {$items[$ruleValue]['name']} field.",
+                        'unique'  => $this->validateUnique($input, (string)$ruleValue, $item) ? null : "{$fieldName} already exists.",
+                        default   => null,
+                    };
 
-				// WIrd der Wert benötigt?
-				if($rule === "required" && empty($input)) {
-					$this->addError($item, "{$rules['name']} field is required."); // ein Feld, das benötigt ist, aber leer ist, wird nicht geprüft
-				}
-				// wenn ein Feld einen EIntrag hat, erfolgt die Prüfung
-				else if(!empty($input)) {
-					switch ($rule) {
-						case 'name':
-							// keine Regel, nur Feldbezeichnung
-							break;
-						case 'min':
-							if(strlen($input) < $detail) {
-								$this->addError($item, "{$rules['name']} must be a minimum of {$detail} characters.");
-							}
-							break;
-						case 'max':
-								if(strlen($input) > $detail) {
-								$this->addError($item, "{$rules['name']} must be a maximum of {$detail} characters.");
-							}
-							break;
-						case 'matches':
-							if($input !== $source[$detail]) {
-								$this->addError($item, "{$rules['name']} field must match {$items[$detail]['name']} field.");
-							}
-							break;
-						case 'unique':
-							if($this->db->get($detail, [$item, '=', $input])->count) {
-								$this->addError($item, "{$rules['name']} already exists.");
-							}
-							break;
-					}
-				}
-			}
-		}
+                    // Wenn die Match-Expression einen Fehler geworfen hat, speichern wir ihn
+                    if ($error) {
+                        $this->addError($item, $error);
+                    }
+                }
+            }
+        }
 
-		if(empty($this->errors)) $this->passed = true; // Einträge im Array $errors werden geprüft. wenn es leer ist, wird $passed auf true gesetzt und die Validierung ist bestanden
-	}
+        $this->passed = empty($this->errors);
+    }
 
-	// Fehler zum Array $errors hinzufügen
-	private function addError(string $fieldName, string $error) // Name des Feldes, indem der Fehler auftritt, und der Fehlertext
-	{
-		// wenn noch kein Eintrag in $errors für das aktuelle Feld existiert
-		
-		if(!isset($this->errors[$fieldName])) $this->errors[$fieldName] = []; // pro Feld ein Array, da es pro Feld mehrere Fehler geben kann. Es entsteht ein mehrdimensionales Array in $errors
-		// wenn es noch kein Array gibt, wird für ein Feld ein Array angelegt
+    // --- Isolierte, testbare Validierungs-Methoden (Single Responsibility Principle) ---
 
-		// sonst wird der Fehler in das Array hinzugefügt
-		$this->errors[$fieldName][] = $error; // fügt einem existierenden, numerischen Array einen neuen Eintrag hinzu
-	}
+    private function validateMin(string $input, int $min): bool {
+        return strlen($input) >= $min;
+    }
+
+    private function validateMax(string $input, int $max): bool {
+        return strlen($input) <= $max;
+    }
+
+    private function validateMatches(string $input, string $matchAgainst): bool {
+        return $input === $matchAgainst;
+    }
+
+    private function validateUnique(string $input, string $table, string $column): bool {
+        return $this->db->get($table, [$column, '=', $input])->count === 0;
+    }
+
+    // -----------------------------------------------------------------------------------
+
+    private function addError(string $fieldName, string $error): void
+    {
+        if (!isset($this->errors[$fieldName])) {
+            $this->errors[$fieldName] = [];
+        }
+        $this->errors[$fieldName][] = $error;
+    }
 }

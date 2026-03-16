@@ -1,5 +1,5 @@
 <?php
-
+namespace App\Libraries;
 class Redirect
 {
 	// Umleitung innerhalb der Anwendung

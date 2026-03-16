@@ -7,24 +7,24 @@
 	<div class="field">
 		<label for="email">Email</label>
 		<span class="invalid-feedback">
-			<?=isset($data['email']) ? $data['email'][0] : ''?>
+			<?=isset($data['email']) ? e($data['email'][0]) : ''?>
 		</span> <!-- Einträge für Validierungsfehler -->
 		<input type="email" 
 			name="email"
 			id="email"
-			value="<?=Input::get('email')?>" 
+			value="<?=e(Input::get('email'))?>" 
 			class="<?=isset($data['email']) ? 'is-invalid' : ''?>">
 	</div>
 
 	<div class="field">
 		<label for="password">Password</label>
 		<span class="invalid-feedback">
-			<?=isset($data['password']) ? $data['password'][0] : ''?>
+			<?=isset($data['password']) ? e($data['password'][0]) : ''?>
 		</span> <!-- Einträge für Validierungsfehler -->
 		<input type="password" 
 			name="password"
 			id="password"
-			value="<?=Input::get('password')?>" 
+			value="<?=e(Input::get('password'))?>" 
 			class="<?=isset($data['password']) ? 'is-invalid' : ''?>">
 	</div>
 
