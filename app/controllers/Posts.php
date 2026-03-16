@@ -15,18 +15,15 @@ use Exception;
 
 class Posts extends Controller
 {
-    private $post;
+   private $post;
+    private Validator $validator; // NEU: Property für den Validator
 
-    /**
-     * NACHHER: Child-Controller reicht Abhängigkeit weiter
-     */
-    public function __construct(Database $db)
+    // NEU: Der Router liefert uns die Database UND den Validator automatisch
+    public function __construct(Database $db, Validator $validator)
     {
-        // 1. CONSTRUCTOR INJECTION: Wir fangen die DB auf und geben sie 
-        // sofort an den Base-Controller (die Elternklasse) weiter!
-        parent::__construct($db);
+        parent::__construct($db); 
+        $this->validator = $validator; 
 
-        // 2. Deine bestehende Logik bleibt völlig unberührt
         if(!Session::has('user')) Redirect::to('/users/login');
 
         $this->post = $this->model('Post');
@@ -50,7 +47,7 @@ class Posts extends Controller
                 'body'  => Input::get('body')
             ];
 
-            $validation = new Validator($this->db);
+            $validation = $this->validator;
             $validation->check($rawData, [
                 'title' => ['name' => 'Title', 'required' => true, 'min' => 3],
                 'body'  => ['name' => 'Content', 'required' => true],
@@ -100,7 +97,7 @@ class Posts extends Controller
                     'body'  => Input::get('body')
                 ];
 
-                $validation = new Validator($this->db);
+                $validation = $this->validator;
                 $validation->check($rawData, [
                     'title' => ['name' => 'Title', 'required' => true, 'min' => 3],
                     'body'  => ['name' => 'Content', 'required' => true],

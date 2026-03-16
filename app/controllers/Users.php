@@ -15,14 +15,24 @@ use App\DTOs\UserProfileDTO;
 use App\DTOs\UserPasswordDTO;
 use Exception;
 
+
 class Users extends Controller
 {
+    private Validator $validator;
+
+    public function __construct(Database $db, Validator $validator)
+    {
+        parent::__construct($db);
+        $this->validator = $validator;
+    }
+    
+
     #[Route('/users/register', methods: ['GET', 'POST'])]
     public function register()
     {
         if($this->checkInputAndCsrf()) {
             $user = $this->model('User');
-            $validation = new Validator($this->db);
+            $validation = $this->validator;
 
             $rawData = [
                 'first_name' => Input::get('first_name'),
@@ -75,7 +85,7 @@ class Users extends Controller
                 'password' => Input::get('password')
             ];
 
-            $validation = new Validator($this->db);
+            $validation = $this->validator;
             $validation->check($rawData, [
                 'email' => ['name' => 'Email', 'required' => true],
                 'password' => ['name' => 'Password', 'required' => true],
@@ -115,7 +125,7 @@ class Users extends Controller
                 'last_name'  => Input::get('last_name')
             ];
 
-            $validation = new Validator($this->db);
+            $validation = $this->validator;
             $validation->check($rawData, [
                 'first_name' => ['name' => 'First name', 'required' => true, 'min' => 2, 'max' => 30],
                 'last_name'  => ['name' => 'Last name', 'required' => true, 'min' => 2, 'max' => 30],
@@ -155,7 +165,7 @@ class Users extends Controller
                 'password_repeat'  => Input::get('password_repeat')
             ];
 
-            $validation = new Validator($this->db);
+            $validation = $this->validator;
             $validation->check($rawData, [
                 'password_current' => ['name' => 'Current password', 'required' => true],
                 'password_new'     => ['name' => 'New password', 'required' => true, 'min' => 6],
