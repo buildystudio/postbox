@@ -2,62 +2,59 @@
 ## Refactoring Praxisberichte 
 
 ![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)
-![Status](https://img.shields.io/badge/Status-Refactoring_in_Progress-orange.svg)
+![Status](https://img.shields.io/badge/Status-Refactoring_Completed-brightgreen.svg)
 ![Architecture](https://img.shields.io/badge/Architecture-Custom_MVC-green.svg)
 
-Willkommen bei **PostBox**. In dieser Phase haben wir das veraltete URL-Parsing durch ein modernes, attribut-basiertes Routing ersetzt. Dieses Repository dient als Basis für eine öffentliche Case Study zum Thema Software-Modernisierung.
+Willkommen bei **PostBox**. Dieses Repository zeigt das Endergebnis einer umfassenden Case Study zur Software-Modernisierung. Aus einem studentischen Legacy-Projekt (Stand 2019) wurde eine moderne, objektorientierte Architektur nach Enterprise-Standards (Stand 2026) entwickelt.
 
-## 🎯 Der Status Quo: Episode 3 abgeschlossen
+> 💡 **Hinweis:** Dieser `main`-Branch enthält den **vollständig modernisierten Code**. Die ursprüngliche Legacy-Version aus 2019 findest du im Branch [`prolog`](https://github.com/buildystudio/postbox/tree/prolog).
 
-Nach der Entkopplung der Datenbank in Episode 2 haben wir nun die **Routing-Logik** revolutioniert. Wir haben uns von unübersichtlichen `if/else`-Blöcken und manuellen `explode('/')`-Operationen verabschiedet.
+## 🎯 Der Status Quo: Enterprise PHP (2026)
 
-### ✅ Erreichte Meilensteine (Branch: `episode-3`)
+Die Architektur wurde von Grund auf refaktorisiert, ohne das Rad neu zu erfinden. Wir haben uns von unübersichtlichen `if/else`-Blöcken, globalen Zuständen und unsicheren Datenstrukturen verabschiedet.
 
-* **Attribute Routing:** Controller-Methoden werden nun über moderne PHP Attributes (z. B. `#[Route('/blog')]`) gesteuert.
-* **Wegfall der Apache-Abhängigkeit:** Das System ist nun vollständig serverunabhängig und benötigt keine komplexen `.htaccess`-Hacks mehr.
-* **Zentraler Router:** Einführung einer robusten Routing-Engine, die HTTP-Verben (GET, POST) und Parameter automatisch verarbeitet.
-* **Code-Sauberkeit:** Die Core-Klasse ist massiv geschrumpft, da die Logik nun deklarativ direkt an den Controller-Methoden liegt.
+### ✅ Erreichte Meilensteine
+
+* **Inversion of Control:** Ein rekursiver Dependency Injection Container löst Klassenabhängigkeiten automatisch auf.
+* **Attribute Routing:** Controller-Methoden werden deklarativ über PHP 8 Attributes (z. B. `#[Route('/blog')]`) gesteuert.
+* **Typsicherheit:** Der Datenfluss zwischen Layern wird streng über Data Transfer Objects (DTOs) kontrolliert.
+* **Modernes PHP:** Nutzung von PSR-4 Autoloading via Composer, Match-Expressions und strikten Typisierungen.
+* **Wegfall der Apache-Abhängigkeit:** Das System ist vollständig serverunabhängig und benötigt keine `.htaccess`-Hacks mehr.
 
 ---
 
 ## 🗺️ Modernisierungs-Roadmap
 
+Alle Phasen des Refactorings sind abgeschlossen. Um die einzelnen Schritte nachzuvollziehen, existiert für jede Lektion ein eigener Branch:
+
 * [x] **Episode 1:** Einführung von Composer & PSR-4 Autoloading.
 * [x] **Episode 2:** Refactoring der Datenbank zu Dependency Injection.
-* [x] **Episode 3:** Modernes Routing mit PHP Attributes.
-* [ ] **Episode 4:** Einführung von Typsicherheit und DTOs.
-* [ ] **Episode 5:** Security-Updates (Modern Escaping & CSRF).
-* [ ] **Episode 6:** Optimierung der Business-Logik mit modernen PHP-Features.
+* [x] **Episode 3:** Modernes Routing mit PHP Attributes & Autowiring-Container.
+* [x] **Episode 4:** Einführung von Typsicherheit und DTOs.
+* [x] **Episode 5:** Security-Updates (Modern Output-Escaping).
+* [x] **Episode 6:** Optimierung der Business-Logik mit modernen PHP-Features.
 
 ---
 
-## 🚀 Installation (Stand Episode 3)
+## 🚀 Installation (Modern 2026 Version)
 
-1. **Repository klonen & Branch wechseln:**
+1. **Repository klonen:**
    ```bash
    git clone [https://github.com/buildystudio/postbox.git](https://github.com/buildystudio/postbox.git)
-   git checkout episode-3
+   cd postbox
+Abhängigkeiten installieren:
 
+Bash
+composer install
+Umgebung starten:
 
+Mit Docker (Empfohlen): Starte die Container mit docker-compose up -d. Die Datenbank initialisiert sich selbst.
 
-2. **Abhängigkeiten installieren:**
-   ```bash
-   composer install
+Manuell ohne Docker: php -S localhost:8000 -t public (Konfiguriere vorher deine Zugangsdaten in app/config/config.php).
 
-
-
-
-3. **Umgebung starten:**
-* **Mit Docker:** `docker-compose up -d`
-* **Manuell:** `php -S localhost:8000 -t public`
-
-
-
----
-
-## 📬 Begleite das Refactoring
-
+📬 Begleite das Refactoring
 Ich teile die detaillierten Architektur-Entscheidungen und den "Vorher-Nachher"-Vergleich auf LinkedIn und Medium:
 
-* 💼 **LinkedIn:** [Dinko Djurkovic](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1)
-* ✍️ **Case Study:** [Ausführliche Berichte auf Medium](https://medium.com/@buildy.studio)
+💼 LinkedIn: Dinko Djurkovic
+
+✍️ Case Study: Ausführliche Berichte auf Medium
