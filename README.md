@@ -12,7 +12,7 @@ Dieses Projekt ist eine Zeitkapsel. Es zeigt exakt, wie Custom-Frameworks in der
 
 Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt für Schritt auf das Niveau moderner Enterprise-Architekturen (PHP 8.4+) zu heben. Es ist der perfekte Guide für Entwickler, die nach einer längeren PHP-Pause ihr Architektur-Wissen auffrischen wollen.
 
-### ❌ Der Legacy-Zustand (Branch: `main`)
+### ❌ Der Legacy-Zustand (Branch: `prolog`)
 - Manuelles Autoloading via fehleranfälligen `require_once`-Ketten.
 - Versteckte Abhängigkeiten durch globale Singletons (Datenbank-Verbindung).
 - Implizites, unsicheres URL-Parsing via `explode('/')` in der Core-Klasse.
@@ -36,13 +36,13 @@ Der komplette Umbau wird in einer 6-teiligen Artikelserie auf Medium im Detail e
 
 **So nutzt du dieses Repository:** Für jede Lektion existiert ein eigener Git-Branch. Wechsle einfach in den entsprechenden Branch, um dir den exakten Architektur-Stand nach dem jeweiligen Umbau-Schritt über die Diffs (Vorher/Nachher) anzusehen.
 
-* 📖 **Prolog:** [Zurück zu PHP? Die Anatomie einer 2019er Legacy-App](https://medium.com/@buildy.studio/zurück-zu-php-a2329356cbb1)
-* 🌿 **Branch Lektion 1:** [Vom require_once zum PSR-4 Autoloader](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-5ba4704f8d67)
-* 🌿 **Branch Lektion 2:** [Vom Singleton zur Dependency Injection](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-91699d0a2130)
-* 🌿 **Branch Lektion 3:** [Vom impliziten Routing zu PHP 8 Attributes](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-a8876d71c17a)
-* 🌿 **Branch Lektion 4:** [Von assoziativen Arrays zu strikten DTOs](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-c7111a89d80d)
-* 🌿 **Branch Lektion 5:** [Von Input-Escaping zu Output-Escaping (FIEO)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-d68285a6ab2e)
-* 🌿 **Branch Lektion 6:** [Von Switch-Statements zu Match-Expressions](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-6f75b2da3acf)
+* 📖 **Branch `prolog`:** [Zurück zu PHP? Die Anatomie einer 2019er Legacy-App](https://medium.com/@buildy.studio/zurück-zu-php-a2329356cbb1)
+* 🌿 **Branch `ep1-autoloading`:** [Zurück zu PHP? Vom require_once zum PSR-4 Autoloader (Lektion 1/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-5ba4704f8d67)
+* 🌿 **Branch `ep2-dependency-injection`:** [Zurück zu PHP? Vom Singleton zur Dependency Injection (Lektion 2/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-91699d0a2130)
+* 🌿 **Branch `ep3-attributes-routing`:** [Zurück zu PHP? Vom impliziten Routing zu PHP 8 Attributes (Lektion 3/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-a8876d71c17a)
+* 🌿 **Branch `ep4-strict-types-dtos`:** [Zurück zu PHP? Von assoziativen Arrays zu strikten DTOs (Lektion 4/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-c7111a89d80d)
+* 🌿 **Branch `ep5-output-escaping`:** [Zurück zu PHP? Von Input-Escaping zu Output-Escaping (Lektion 5/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-d68285a6ab2e)
+* 🌿 **Branch `ep6-match-expressions`:** [Zurück zu PHP? Von Switch-Statements zu Match-Expressions (Lektion 6/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-6f75b2da3acf)
 
 ---
 
