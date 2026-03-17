@@ -1,75 +1,75 @@
-
-# 📦 PostBox: Legacy-to-Modern PHP Case Study
+# 📦 PostBox: Legacy-to-Modern PHP (Case Study)
 
 ![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Refactoring_in_Progress-orange.svg)
 ![Architecture](https://img.shields.io/badge/Architecture-Custom_MVC-green.svg)
 
-Willkommen bei **PostBox** – einem Full-OOP PHP Content Management System. Ursprünglich entwickelt 2019 als studentisches Semesterabschlussprojekt, dient dieses Repository heute als öffentliche Case Study für massives Code-Refactoring.
+Willkommen bei **PostBox** – einem klassischen, handgeschriebenen Model-View-Controller (MVC) Projekt aus dem Jahr 2019. Ursprünglich entwickelt als studentisches Projekt, dient dieses Repository heute als öffentlicher, interaktiver Lernpfad für massives Code-Refactoring.
 
 ## 🎯 Das Projekt-Ziel: Von 2019 zu 2026
 
-Dieses Projekt ist eine Zeitkapsel. Es zeigt exakt, wie man MVC-Frameworks "from scratch" gebaut hat, bevor sich moderne Standards flächendeckend durchgesetzt haben. Keine Packages, kein Composer, alles handgeschrieben.
+Dieses Projekt ist eine Zeitkapsel. Es zeigt exakt, wie Custom-Frameworks in der PHP 7.x-Ära "from scratch" gebaut wurden, bevor sich moderne Standards flächendeckend durchgesetzt haben. Keine Packages, kein Composer, alles handgeschrieben.
 
-Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt für Schritt auf das Niveau moderner Enterprise-Architekturen zu heben. Wir implementieren Standards, wie man sie heute von führenden Open-Source-Maintainern und modernen Frameworks kennt.
+Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt für Schritt auf das Niveau moderner Enterprise-Architekturen (PHP 8.4+) zu heben. Es ist der perfekte Guide für Entwickler, die nach einer längeren PHP-Pause ihr Architektur-Wissen auffrischen wollen.
 
-### 🔴 Der Legacy-Zustand (Branch: `main` / `legacy`)
-- Manuelles Autoloading via `require_once` und `spl_autoload_register` (Kein Composer).
-- Globale Zustände durch das Singleton-Pattern in der Datenbank-Verbindung.
-- Implizites URL-Parsing via `explode('/')` in der Core-Klasse.
-- Untypisierte Arrays für den Datentransfer zwischen Controllern und Models.
-- Hohe zyklomatische Komplexität in Validierungsklassen (verschachtelte `foreach`/`switch`-Blöcke).
+### ❌ Der Legacy-Zustand (Branch: `main`)
+- Manuelles Autoloading via fehleranfälligen `require_once`-Ketten.
+- Versteckte Abhängigkeiten durch globale Singletons (Datenbank-Verbindung).
+- Implizites, unsicheres URL-Parsing via `explode('/')` in der Core-Klasse.
+- Untypisierte assoziative Arrays (`$_POST`) als Datentransportmittel.
+- Fatales Input-Escaping direkt in die Datenbank.
+- Hohe zyklomatische Komplexität durch riesige `switch`-Monster im Validator.
 
-### 🟢 Das Ziel-Setup (Refactoring-Branches)
+### ✅ Das Ziel-Setup (Refactoring-Branches)
 - **Infrastruktur:** Vollständiges PSR-4 Autoloading via Composer.
-- **Architektur:** Dependency Injection (DI) Container statt Singletons.
-- **Routing:** Deklaratives Routing über moderne PHP Attributes.
-- **Domain Logic:** Typsicherheit durch `declare(strict_types=1)`, Readonly Classes, DTOs (Data Transfer Objects) und Constructor Property Promotion.
-- **Clean Code:** Einsatz von Enums und Match-Expressions für elegante Business-Logik.
+- **Architektur:** Inversion of Control (IoC) Container & saubere Dependency Injection.
+- **Routing:** Deklaratives, typsicheres Routing über moderne PHP 8 Attributes.
+- **Datenfluss:** Typsicherheit durch `readonly` Data Transfer Objects (DTOs) und Union Types.
+- **Security:** Saubere Rohdaten in der DB und konsequentes Output-Escaping (FIEO / OWASP).
+- **Logik:** Entflochtene Logik durch kompakte PHP 8 `match`-Expressions.
 
 ---
 
-## 🗺️ Refactoring Roadmap (Episodenguide)
+## 🗺️ Die Refactoring-Serie (Artikel & Branches)
 
-Der Umbau wird dokumentiert und auf LinkedIn begleitet. Für jede Episode wird es einen eigenen Pull Request geben, um den "Vorher-Nachher"-Vergleich im Code transparent nachvollziehen zu können.
+Der komplette Umbau wird in einer 6-teiligen Artikelserie auf Medium im Detail erklärt. 
 
-- [ ] **Episode 1:** Der Befreiungsschlag – Composer, PSR-4 & das Ende von `require_once`
-- [ ] **Episode 2:** Tod dem Singleton – Dependency Injection für die Datenbank
-- [ ] **Episode 3:** Bye Bye `explode('/')` – Modernes Routing mit PHP Attributes
-- [ ] **Episode 4:** Typsicherheit pur – DTOs, Strict Types & Property Promotion
-- [ ] **Episode 5:** Security Shift – Escaping on Output, not Input
-- [ ] **Episode 6:** Match Expressions statt `switch`-Monster – Der neue Validator
+**So nutzt du dieses Repository:** Für jede Lektion existiert ein eigener Git-Branch. Wechsle einfach in den entsprechenden Branch, um dir den exakten Architektur-Stand nach dem jeweiligen Umbau-Schritt über die Diffs (Vorher/Nachher) anzusehen.
+
+* 📖 **Prolog:** [Zurück zu PHP? Die Anatomie einer 2019er Legacy-App](https://medium.com/@buildy.studio/zurück-zu-php-a2329356cbb1)
+* 🌿 **Branch Lektion 1:** [Vom require_once zum PSR-4 Autoloader](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-5ba4704f8d67)
+* 🌿 **Branch Lektion 2:** [Vom Singleton zur Dependency Injection](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-91699d0a2130)
+* 🌿 **Branch Lektion 3:** [Vom impliziten Routing zu PHP 8 Attributes](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-a8876d71c17a)
+* 🌿 **Branch Lektion 4:** [Von assoziativen Arrays zu strikten DTOs](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-c7111a89d80d)
+* 🌿 **Branch Lektion 5:** [Von Input-Escaping zu Output-Escaping (FIEO)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-d68285a6ab2e)
+* 🌿 **Branch Lektion 6:** [Von Switch-Statements zu Match-Expressions](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-6f75b2da3acf)
 
 ---
 
-## 🚀 Installation & Lokales Setup (Legacy Version)
+## 🚀 Installation & Lokales Setup
 
-Wer sich den ursprünglichen Code ansehen oder lokal ausführen möchte:
+Wer sich den ursprünglichen Code ansehen oder die Applikation lokal ausführen möchte:
 
-1. Repository klonen:
+1. **Repository klonen:**
    ```bash
    git clone [https://github.com/buildystudio/postbox.git](https://github.com/buildystudio/postbox.git)
-```
+Datenbank einrichten:
 
-2. Datenbank einrichten:
-* Erstelle eine lokale MySQL-Datenbank namens `postbox`.
-* *Hinweis: Ein SQL-Dump für die Tabellenstruktur (`users`, `posts`) folgt.*
+Erstelle eine lokale MySQL-Datenbank namens postbox.
 
+Hinweis: Ein SQL-Dump für die Tabellenstruktur (users, posts) liegt im Root-Verzeichnis bei.
 
-3. Konfiguration anpassen:
-* Öffne `app/config/config.php` und passe `DB_HOST`, `DB_USER` und `DB_PW` an deine lokale Umgebung (z.B. MAMP/XAMPP/Docker) an.
-* Passe `DB_NAME` auf `postbox` an.
-* Passe den `URLROOT` an deinen lokalen Serverpfad an.
+Konfiguration anpassen:
 
+Öffne app/config/config.php und passe DB_HOST, DB_USER und DB_PW an deine lokale Umgebung (z.B. Laravel Herd, MAMP, Docker) an.
 
+Passe DB_NAME auf postbox an.
 
----
+Passe die Konstante URLROOT an deinen lokalen Serverpfad an.
 
-## 📬 Folge der Reiseå
+📬 Folge der Reise
+Lass gerne einen ⭐ da, wenn dir dieses Refactoring-Tutorial geholfen hat!
 
-Lass gerne einen ⭐ da, wenn du das Refactoring verfolgen willst.
-Die ausführlichen Architektur-Updates und Code-Diskussionen zu den einzelnen Episoden teile ich direkt hier:
+Wenn du architektonische Tipps, alternative Lösungsansätze oder Korrekturen zum Code hast – ich bin immer offen für konstruktives Feedback. Erstelle gerne einen Pull Request oder diskutiere mit mir auf LinkedIn:
 
-* 💼 **Updates & Diskussionen:** [Folge mir auf LinkedIn](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1)
-
-```
+💼 Updates & Diskussionen: Folge mir auf LinkedIn
