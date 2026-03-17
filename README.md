@@ -1,63 +1,75 @@
-# 📦 Warum Software neu schreiben meistens ein Fehler ist
-## Refactoring Praxisberichte 
+# 📦 PostBox: Legacy-to-Modern PHP (Case Study)
 
 ![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Refactoring_in_Progress-orange.svg)
 ![Architecture](https://img.shields.io/badge/Architecture-Custom_MVC-green.svg)
 
-Willkommen bei **PostBox**. In dieser Phase haben wir das veraltete URL-Parsing durch ein modernes, attribut-basiertes Routing ersetzt. Dieses Repository dient als Basis für eine öffentliche Case Study zum Thema Software-Modernisierung.
+Willkommen bei **PostBox** – einem klassischen, handgeschriebenen Model-View-Controller (MVC) Projekt aus dem Jahr 2019. Ursprünglich entwickelt als studentisches Projekt, dient dieses Repository heute als öffentlicher, interaktiver Lernpfad für massives Code-Refactoring.
 
-## 🎯 Der Status Quo: Episode 3 abgeschlossen
+## 🎯 Das Projekt-Ziel: Von 2019 zu 2026
 
-Nach der Entkopplung der Datenbank in Episode 2 haben wir nun die **Routing-Logik** revolutioniert. Wir haben uns von unübersichtlichen `if/else`-Blöcken und manuellen `explode('/')`-Operationen verabschiedet.
+Dieses Projekt ist eine Zeitkapsel. Es zeigt exakt, wie Custom-Frameworks in der PHP 7.x-Ära "from scratch" gebaut wurden, bevor sich moderne Standards flächendeckend durchgesetzt haben. Keine Packages, kein Composer, alles handgeschrieben.
 
-### ✅ Erreichte Meilensteine (Branch: `episode-3`)
+Das Ziel dieser öffentlichen Case Study ist es, diese Legacy-Codebase Schritt für Schritt auf das Niveau moderner Enterprise-Architekturen (PHP 8.4+) zu heben. Es ist der perfekte Guide für Entwickler, die nach einer längeren PHP-Pause ihr Architektur-Wissen auffrischen wollen.
 
-* **Attribute Routing:** Controller-Methoden werden nun über moderne PHP Attributes (z. B. `#[Route('/blog')]`) gesteuert.
-* **Wegfall der Apache-Abhängigkeit:** Das System ist nun vollständig serverunabhängig und benötigt keine komplexen `.htaccess`-Hacks mehr.
-* **Zentraler Router:** Einführung einer robusten Routing-Engine, die HTTP-Verben (GET, POST) und Parameter automatisch verarbeitet.
-* **Code-Sauberkeit:** Die Core-Klasse ist massiv geschrumpft, da die Logik nun deklarativ direkt an den Controller-Methoden liegt.
+### ❌ Der Legacy-Zustand (Branch: `prolog`)
+- Manuelles Autoloading via fehleranfälligen `require_once`-Ketten.
+- Versteckte Abhängigkeiten durch globale Singletons (Datenbank-Verbindung).
+- Implizites, unsicheres URL-Parsing via `explode('/')` in der Core-Klasse.
+- Untypisierte assoziative Arrays (`$_POST`) als Datentransportmittel.
+- Fatales Input-Escaping direkt in die Datenbank.
+- Hohe zyklomatische Komplexität durch riesige `switch`-Monster im Validator.
+
+### ✅ Das Ziel-Setup (Refactoring-Branches)
+- **Infrastruktur:** Vollständiges PSR-4 Autoloading via Composer.
+- **Architektur:** Inversion of Control (IoC) Container & saubere Dependency Injection.
+- **Routing:** Deklaratives, typsicheres Routing über moderne PHP 8 Attributes.
+- **Datenfluss:** Typsicherheit durch `readonly` Data Transfer Objects (DTOs) und Union Types.
+- **Security:** Saubere Rohdaten in der DB und konsequentes Output-Escaping (FIEO / OWASP).
+- **Logik:** Entflochtene Logik durch kompakte PHP 8 `match`-Expressions.
 
 ---
 
-## 🗺️ Modernisierungs-Roadmap
+## 🗺️ Die Refactoring-Serie (Artikel & Branches)
 
-* [x] **Episode 1:** Einführung von Composer & PSR-4 Autoloading.
-* [x] **Episode 2:** Refactoring der Datenbank zu Dependency Injection.
-* [x] **Episode 3:** Modernes Routing mit PHP Attributes.
-* [ ] **Episode 4:** Einführung von Typsicherheit und DTOs.
-* [ ] **Episode 5:** Security-Updates (Modern Escaping & CSRF).
-* [ ] **Episode 6:** Optimierung der Business-Logik mit modernen PHP-Features.
+Der komplette Umbau wird in einer 6-teiligen Artikelserie auf Medium im Detail erklärt. 
+
+**So nutzt du dieses Repository:** Für jede Lektion existiert ein eigener Git-Branch. Wechsle einfach in den entsprechenden Branch, um dir den exakten Architektur-Stand nach dem jeweiligen Umbau-Schritt über die Diffs (Vorher/Nachher) anzusehen.
+
+* 📖 **Branch `prolog`:** [Zurück zu PHP? Die Anatomie einer 2019er Legacy-App](https://medium.com/@buildy.studio/zurück-zu-php-a2329356cbb1)
+* 🌿 **Branch `ep1-autoloading`:** [Zurück zu PHP? Vom require_once zum PSR-4 Autoloader (Lektion 1/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-5ba4704f8d67)
+* 🌿 **Branch `ep2-dependency-injection`:** [Zurück zu PHP? Vom Singleton zur Dependency Injection (Lektion 2/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-91699d0a2130)
+* 🌿 **Branch `ep3-attributes-routing`:** [Zurück zu PHP? Vom impliziten Routing zu PHP 8 Attributes (Lektion 3/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-a8876d71c17a)
+* 🌿 **Branch `ep4-strict-types-dtos`:** [Zurück zu PHP? Von assoziativen Arrays zu strikten DTOs (Lektion 4/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-c7111a89d80d)
+* 🌿 **Branch `ep5-output-escaping`:** [Zurück zu PHP? Von Input-Escaping zu Output-Escaping (Lektion 5/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-d68285a6ab2e)
+* 🌿 **Branch `ep6-match-expressions`:** [Zurück zu PHP? Von Switch-Statements zu Match-Expressions (Lektion 6/6)](https://medium.com/@buildy.studio/warum-software-neu-schreiben-meistens-ein-fehler-ist-6f75b2da3acf)
 
 ---
 
-## 🚀 Installation (Stand Episode 3)
+## 🚀 Installation & Lokales Setup
 
-1. **Repository klonen & Branch wechseln:**
+Wer sich den ursprünglichen Code ansehen oder die Applikation lokal ausführen möchte:
+
+1. **Repository klonen:**
    ```bash
    git clone [https://github.com/buildystudio/postbox.git](https://github.com/buildystudio/postbox.git)
-   git checkout episode-3
+Datenbank einrichten:
 
+Erstelle eine lokale MySQL-Datenbank namens postbox.
 
+Hinweis: Ein SQL-Dump für die Tabellenstruktur (users, posts) liegt im Root-Verzeichnis bei.
 
-2. **Abhängigkeiten installieren:**
-   ```bash
-   composer install
+Konfiguration anpassen:
 
+Öffne app/config/config.php und passe DB_HOST, DB_USER und DB_PW an deine lokale Umgebung (z.B. Laravel Herd, MAMP, Docker) an.
 
+Passe DB_NAME auf postbox an.
 
+Passe die Konstante URLROOT an deinen lokalen Serverpfad an.
 
-3. **Umgebung starten:**
-* **Mit Docker:** `docker-compose up -d`
-* **Manuell:** `php -S localhost:8000 -t public`
+📬 Folge der Reise
+Lass gerne einen ⭐ da, wenn dir dieses Refactoring-Tutorial geholfen hat!
 
+Wenn du architektonische Tipps, alternative Lösungsansätze oder Korrekturen zum Code hast – ich bin immer offen für konstruktives Feedback. Erstelle gerne einen Pull Request oder diskutiere mit mir auf LinkedIn:
 
-
----
-
-## 📬 Begleite das Refactoring
-
-Ich teile die detaillierten Architektur-Entscheidungen und den "Vorher-Nachher"-Vergleich auf LinkedIn und Medium:
-
-* 💼 **LinkedIn:** [Dinko Djurkovic](https://www.google.com/search?q=https://www.linkedin.com/in/dinko-d-7155673b1)
-* ✍️ **Case Study:** [Ausführliche Berichte auf Medium](https://medium.com/@buildy.studio)
+💼 Updates & Diskussionen: Folge mir auf LinkedIn
