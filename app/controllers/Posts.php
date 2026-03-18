@@ -55,7 +55,7 @@ class Posts extends Controller
 
             if($validation->passed) {
                 try {
-                    $dto = new PostCreateDTO($rawData['title'], $rawData['body'], Session::get('user'));
+                    $dto = PostCreateDTO::fromArray($rawData, (int)Session::get('user'));
                     $this->post->create($dto);
                     
                     Session::flash('success', 'Posted successfully.');
