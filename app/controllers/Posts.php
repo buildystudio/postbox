@@ -56,7 +56,7 @@ class Posts extends Controller
 
             if($validation->passed) {
                 try {
-                    $dto = new PostCreateDTO($rawData['title'], $rawData['body'], Session::get('user'));
+                    $dto = PostCreateDTO::fromArray($rawData, (int)Session::get('user'));
                     $this->post->create($dto);
                     
                     Session::flash('success', 'Posted successfully.');
@@ -133,7 +133,7 @@ class Posts extends Controller
 	{
 		if($this->post->belongsToUser($id)) {
 			if($this->checkInputAndCsrf()) {
-				if($this->post->delete($id)) {
+				if($this->post->delete((int)$id)) {
 					Session::flash('success', 'Post deleted successfully.');
 					Redirect::to('/posts');
 				}
