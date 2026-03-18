@@ -12,17 +12,17 @@ use PDOException;
 class Database 
 {
 
-	// Zugang zur Datenbank
-	private $connect = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME,
-					$user = DB_USER,
-					$pw = DB_PW,
-					$pdo,
-					$query,
-					$results;
-
-	// Abfragbare Eigenschaften
-	public $error = false,
-				 $count = 0;
+	// Zugang zur Datenbank (Strict Typed Properties)
+    private string $connect = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME;
+    private string $user = DB_USER;
+    private string $pw = DB_PW;
+    private ?PDO $pdo = null;
+    private $query = null; // PDOStatement
+    private array $results = [];
+    
+    // Abfragbare Eigenschaften
+    public bool $error = false;
+    public int $count = 0;
 
 	// Verbindung zur Datenbank herstellen
 	public function __construct() // kann wegen private nicht mehr wie vorher instanziiert werden
