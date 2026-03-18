@@ -15,7 +15,7 @@ class Users extends Controller
 
 	// Registrierung
 	#[Route('/users/register', methods: ['GET', 'POST'])]
-	public function register()
+	public function register(): void
 	{
 
 		// Daten wurden übertragen
@@ -95,7 +95,7 @@ class Users extends Controller
 
 	// Login Methode
     #[Route('/users/login', methods: ['GET', 'POST'])]
-	public function login() 
+	public function login(): void
 	{
 		if($this->checkInputAndCsrf()) { // ist etwas im Formular enthalten und den Inhalt des Feldes zum Schutz vor CSRF
 			$user = $this->model('User'); // instanziert das User Model
@@ -131,7 +131,7 @@ class Users extends Controller
 
 	// Logout Methode
     #[Route('/users/logout', methods: ['GET'])]
-	public function logout() 
+	public function logout(): void
 	{
 		$this->model('User')->logout();; // Instanz User Model
 		Redirect::to(); // Weiterleitung auf Startseite
@@ -185,7 +185,7 @@ class Users extends Controller
 		else $this->view('users/profile', ['user' => $user->userData]);
 	}
 	#[Route('/users/password', methods: ['GET', 'POST'])]
-	public function password()
+	public function password(): void
 	{
 		if(!Session::has('user')) Redirect::to();
 

@@ -30,7 +30,7 @@ class Posts extends Controller
     }
 	
 	#[Route('/posts', methods: ['GET'])]
-	public function index()
+	public function index(): void
 	{
 // Instanz des Post Models, die alle Posts abruft
          $posts = $this->post->getPosts();
@@ -39,7 +39,7 @@ class Posts extends Controller
 
 	// Posts hinzufügen
 	#[Route('/posts/add', methods: ['GET', 'POST'])]
-	public function add()
+	public function add(): void
 	{
 		if($this->checkInputAndCsrf()) {
 			foreach($this->post->postFields as $key => $value) {
@@ -77,7 +77,7 @@ class Posts extends Controller
 
 	// einzelnen Post anzeigen
 	#[Route('/posts/show/{id}', methods: ['GET'])]
-	public function show($id)
+	public function show($id): void
 	{
 		if($post = $this->post->getSinglePostBy($id)) {
 			$this->view('posts/show', [
@@ -93,7 +93,7 @@ class Posts extends Controller
 
 	// einen Post editieren
 	#[Route('/posts/edit/{id}', methods: ['GET', 'POST'])]
-	public function edit($id)
+	public function edit($id): void
 	{
 		// wenn die Person, die auf Editieren klickt, der Autor ist
 		if($this->post->belongsToUser($id)) {
@@ -142,7 +142,7 @@ class Posts extends Controller
 		}
 	}
 	#[Route('/posts/delete/{id}', methods: ['POST'])]
-	public function delete($id)
+	public function delete($id): void
 	{
 		if($this->post->belongsToUser($id)) {
 			if($this->checkInputAndCsrf()) {
