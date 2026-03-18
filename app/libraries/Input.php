@@ -1,34 +1,34 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Libraries;
+
 class Input 
 {
-	// prüfen, ob $_GET oder $_POST Werte beinhalten
-	
-	public static function exists(string $type = 'post')
-	{
-		switch ($type) {
-			// prüft, ob in $_POST oder $_GET etwas drin steht. Das passiert nur, wenn ein Formular abgeschickt wurde
-			case 'post':
-					return !empty($_POST) ? true : false; // verkürzte if-Schreibweise
-				break;
-			case 'get':
-					return !empty($_GET) ? true : false; 
-				break;
-			default:
-				return false;
-				break;
-		}
-	}
+    // prüfen, ob $_GET oder $_POST Werte beinhalten
+    public static function exists(string $type = 'post'): bool
+    {
+        return match ($type) {
+            'post' => !empty($_POST),
+            'get'  => !empty($_GET),
+            default => false,
+        };
+    }
 
-	// einen Eintrag aus $_GET oder $_POST auslesen
-	
-	public static function get(string $item)
-	{
-		if(isset($_POST[$item])) return htmlentities(trim($_POST[$item]), ENT_QUOTES, 'UTF-8'); // prüft, ob ein Feld gefüllt ist, trimmt es und wandelt Sonderzeichen um (schützt den Code). 
-		else if(isset($_GET[$item])) return htmlentities(trim($_GET[$item]), ENT_QUOTES, 'UTF-8');
-		// Wert ist nirgendwo vorhanden
-		return ''; 
-	}
+    // einen Eintrag aus $_GET oder $_POST auslesen
+    public static function get(string $item): string
+    {
+        // FIEO-Standard: Wir speichern die ROHDATEN. Kein htmlentities() mehr beim Input!
+        // Wir erzwingen einen String-Cast und entfernen nur führende/abschließende Leerzeichen.
+        if (isset($_POST[$item])) {
+            return trim((string)$_POST[$item]); 
+        } 
+        
+        if (isset($_GET[$item])) {
+            return trim((string)$_GET[$item]);
+        }
+
+        // Wert ist nirgendwo vorhanden
+        return ''; 
+    }
 }
-
-// Input::get('first_name');

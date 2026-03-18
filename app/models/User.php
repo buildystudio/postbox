@@ -15,7 +15,8 @@ class User extends Model
 {
     private string $sessionKey = 'user';
 
-    public $userData;
+    // 2026 Standard: PHP weiß jetzt, dass hier ein Objekt (PDO FETCH_OBJ) oder null drin ist.
+    public ?object $userData = null;
  
 
   // Der 2026 Enterprise Way: DB per DI erzwingen
