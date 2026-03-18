@@ -2,7 +2,7 @@
 namespace App\Controllers;
 use App\Attributes\Route;
 use App\Libraries\Controller;
-use App\Libraries\Database; // WICHTIG: Die neue Abhängigkeit importieren!
+use App\Libraries\Database;
 use App\Libraries\Session;
 use App\Libraries\Redirect;
 use App\Libraries\Input;

@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Libraries\Database;
 use App\Libraries\Controller;
 use App\Attributes\Route;
 
