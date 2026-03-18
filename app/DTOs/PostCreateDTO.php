@@ -9,4 +9,13 @@ readonly class PostCreateDTO
         public string $body,
         public int $userId
     ) {}
+
+    public static function fromArray(array $data, int $userId): self
+    {
+        return new self(
+            title: $data['title'],
+            body: $data['body'],
+            userId: $userId
+        );
+    }
 }

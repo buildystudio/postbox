@@ -21,7 +21,7 @@ class Controller
         $this->db = $db;
     }
 
-    public function index()
+    public function index(): void
     {
         // (Kleiner Vorgriff: Falls Redirect später auch in einen Namespace zieht, 
         // musst du es oben mit 'use' importieren. Für jetzt lassen wir es so.)

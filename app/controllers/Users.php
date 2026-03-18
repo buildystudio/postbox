@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Libraries\Database;
 use App\Attributes\Route;
 use App\Libraries\Controller;
 use App\Libraries\Validator;
@@ -28,7 +29,7 @@ class Users extends Controller
     
 
     #[Route('/users/register', methods: ['GET', 'POST'])]
-    public function register()
+    public function register(): void
     {
         if($this->checkInputAndCsrf()) {
             $user = $this->model('User');
@@ -75,7 +76,7 @@ class Users extends Controller
     }
 
     #[Route('/users/login', methods: ['GET', 'POST'])]
-    public function login() 
+    public function login(): void
     {
         if($this->checkInputAndCsrf()) { 
             $user = $this->model('User'); 
@@ -105,14 +106,14 @@ class Users extends Controller
     }
     
     #[Route('/users/logout', methods: ['GET'])]
-    public function logout() 
+    public function logout(): void 
     {
         $this->model('User')->logout();
         Redirect::to(); 
     }
 
     #[Route('/users/profile', methods: ['GET', 'POST'])]
-    public function profile()
+    public function profile(): void
     {
         if(!Session::has('user')) Redirect::to(); 
 
@@ -151,7 +152,7 @@ class Users extends Controller
     }
 
     #[Route('/users/password', methods: ['GET', 'POST'])]
-    public function password()
+    public function password(): void
     {
         if(!Session::has('user')) Redirect::to();
 
